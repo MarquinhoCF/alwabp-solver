@@ -1,0 +1,371 @@
+
+
+\documentclass[
+	% -- opções da classe memoir --
+	12pt,				% tamanho da fonte
+	openright,			% capítulos começam em pág ímpar (insere página vazia caso preciso)
+	twoside,			% para impressão em recto e verso. Oposto a oneside
+	a4paper,			% tamanho do papel. 
+	% -- opções da classe abntex2 --
+	%chapter=TITLE,		% títulos de capítulos convertidos em letras maiúsculas
+	%section=TITLE,		% títulos de seções convertidos em letras maiúsculas
+	%subsection=TITLE,	% títulos de subseções convertidos em letras maiúsculas
+	%subsubsection=TITLE,% títulos de subsubseções convertidos em letras maiúsculas
+	% -- opções do pacote babel --
+	english,			% idioma adicional para hifenização
+	french,				% idioma adicional para hifenização
+	spanish,			% idioma adicional para hifenização
+	brazil,				% o último idioma é o principal do documento
+	]{abntex2}
+
+
+% ---
+% PACOTES
+% ---
+
+% ---
+% Pacotes fundamentais 
+% ---
+\usepackage{lmodern}			% Usa a fonte Latin Modern
+\usepackage[T1]{fontenc}		% Selecao de codigos de fonte.
+\usepackage[utf8]{inputenc}		% Codificacao do documento (conversão automática dos acentos)
+\usepackage{indentfirst}		% Indenta o primeiro parágrafo de cada seção.
+\usepackage{color}				% Controle das cores
+\usepackage{graphicx}			% Inclusão de gráficos
+\usepackage{microtype} 			% para melhorias de justificação
+% ---
+
+% ---
+% Pacotes adicionais, usados no anexo do modelo de folha de identificação
+% ---
+\usepackage{multicol}
+\usepackage{multirow}
+% ---
+	
+% ---
+% Pacotes adicionais, usados apenas no âmbito do Modelo Canônico do abnteX2
+% ---
+\usepackage{lipsum}				% para geração de dummy text
+% ---
+
+% ---
+% Pacotes de citações
+% ---
+\usepackage[brazilian,hyperpageref]{backref}	 % Paginas com as citações na bibl
+\usepackage[alf]{abntex2cite}	% Citações padrão ABNT
+
+% --- 
+% CONFIGURAÇÕES DE PACOTES
+% --- 
+
+% ---
+% Configurações do pacote backref
+% Usado sem a opção hyperpageref de backref
+\renewcommand{\backrefpagesname}{Citado na(s) página(s):~}
+% Texto padrão antes do número das páginas
+\renewcommand{\backref}{}
+% Define os textos da citação
+\renewcommand*{\backrefalt}[4]{
+	\ifcase #1 %
+		Nenhuma citação no texto.%
+	\or
+		Citado na página #2.%
+	\else
+		Citado #1 vezes nas páginas #2.%
+	\fi}%
+% ---
+
+% ---
+% Informações de dados para CAPA e FOLHA DE ROSTO
+% ---
+\titulo{Trabalho Prático Final -- GCC118  Programação Matemática -- PCC540  Linear and Integer Programming }
+\autor{ Douglas Geovanini de Paiva Mosca Leite, \\ Luiz Otávio... \\ \& Marcos...}
+\local{Brasil}
+\data{2025, Lavras}
+\instituicao{%
+  Universidade Federal de Lavras -- UFLA
+ }
+\tipotrabalho{Relatório técnico}
+% O preambulo deve conter o tipo do trabalho, o objetivo, 
+% o nome da instituição e a área de concentração 
+\preambulo{Trabalho Prático Final -- GCC118  Programação Matemática -- PCC540  Linear and Integer Programming\LaTeX.}
+% ---
+
+% ---
+% Configurações de aparência do PDF final
+
+
+% alterando o aspecto da cor azul
+\definecolor{blue}{RGB}{41,5,195}
+
+% informações do PDF
+\makeatletter
+\hypersetup{
+     	%pagebackref=true,
+		pdftitle={\@title}, 
+		pdfauthor={\@author},
+    	pdfsubject={\imprimirpreambulo},
+	    pdfcreator={LaTeX with abnTeX2},
+		pdfkeywords={abnt}{latex}{abntex}{abntex2}{relatório técnico}, 
+		colorlinks=true,       		% false: boxed links; true: colored links
+    	linkcolor=blue,          	% color of internal links
+    	citecolor=blue,        		% color of links to bibliography
+    	filecolor=magenta,      		% color of file links
+		urlcolor=blue,
+		bookmarksdepth=4
+}
+\makeatother
+% --- 
+
+% --- 
+% Espaçamentos entre linhas e parágrafos 
+% --- 
+
+% O tamanho do parágrafo é dado por:
+\setlength{\parindent}{1.3cm}
+
+% Controle do espaçamento entre um parágrafo e outro:
+\setlength{\parskip}{0.2cm}  % tente também \onelineskip
+
+% ---
+% compila o indice
+% ---
+\makeindex
+% ---
+
+% ----
+% Início do documento
+% ----
+\begin{document}
+
+% Seleciona o idioma do documento (conforme pacotes do babel)
+%\selectlanguage{english}
+\selectlanguage{brazil}
+
+% Retira espaço extra obsoleto entre as frases.
+\frenchspacing 
+
+% ----------------------------------------------------------
+% ELEMENTOS PRÉ-TEXTUAIS
+% ----------------------------------------------------------
+% \pretextual
+
+% ---
+% Capa
+% ---
+\imprimircapa
+% ---
+
+% ---
+% Folha de rosto
+% (o * indica que haverá a ficha bibliográfica)
+% ---
+\imprimirfolhaderosto*
+% ---
+
+% ---
+% Anverso da folha de rosto:
+% ---
+
+{
+\ABNTEXchapterfont
+}
+
+% ---
+% RESUMO
+% ---
+
+% resumo na língua vernácula (obrigatório)
+\setlength{\absparsep}{18pt} % ajusta o espaçamento dos parágrafos do resumo
+\begin{resumo}
+ O Problema de Balanceamento de Linhas de Produção e Designação de Trabalhadores (ALWABP) consiste em atribuir tarefas a estações de trabalho e designar trabalhadores a essas estações, considerando relações de precedência entre tarefas, tempos de execução variáveis por trabalhador, e restrições de incapacidade específicas, com o objetivo de minimizar o tempo de ciclo da linha de produção, definido como o maior tempo de execução entre todas as estações. [Escrever sobre a heuristica]
+
+ \noindent
+\end{resumo}
+% ---
+
+% ---
+% inserir lista de ilustrações
+% ---
+\pdfbookmark[0]{\listfigurename}{lof}
+\listoffigures*
+% ---
+
+% inserir lista de tabelas
+% ---
+\pdfbookmark[0]{\listtablename}{lot}
+\listoftables*
+
+% ---
+% inserir lista de abreviaturas e siglas
+% ---
+\begin{siglas}
+  \item[ABNT] Associação Brasileira de Normas Técnicas
+  \item[abnTeX] ABsurdas Normas para TeX
+\end{siglas}
+% ---
+
+% ---
+% inserir lista de símbolos
+% ---
+\begin{simbolos}
+  \item[$ \Gamma $] Letra grega Gama
+  \item[$ \Lambda $] Lambda
+  \item[$ \zeta $] Letra grega minúscula zeta
+  \item[$ \in $] Pertence
+\end{simbolos}
+% ---
+
+% ---
+% inserir o sumario
+% ---
+\pdfbookmark[0]{\contentsname}{toc}
+\tableofcontents*
+\cleardoublepage
+% ---
+
+
+% ----------------------------------------------------------
+% ELEMENTOS TEXTUAIS
+% ----------------------------------------------------------
+\textual
+
+% ----------------------------------------------------------
+% Introdução (exemplo de capítulo sem numeração, mas presente no Sumário)
+% ----------------------------------------------------------
+\chapter{O problema}
+
+O \textbf{ALWABP} (Assembly Line Worker Assignment and Balancing Problem) é um problema de otimização que combina balanceamento de linha de produção com designação de trabalhadores. Suas características principais são:
+
+\section{Características Fundamentais}
+\begin{itemize}
+    \item Linha de produção com $m$ estações ordenadas linearmente
+    \item Conjunto de $k$ trabalhadores, onde $|S| = |W|$ (número de estações igual ao número de trabalhadores)
+    \item Conjunto de $n$ tarefas a serem distribuídas pelas estações
+    \item Relações de precedência entre tarefas definidas por um grafo direcionado $G = (V, E)$
+    \item Tempos de execução variáveis: $t_{wi}$ representa o tempo da tarefa $i$ pelo trabalhador $w$
+    \item Restrições de incapacidade: $I_w$ define tarefas que o trabalhador $w$ não pode executar
+\end{itemize}
+
+\section{Restrições do Problema}
+\begin{itemize}
+    \item Cada tarefa é designada a exatamente uma estação
+    \item Cada trabalhador é alocado a exatamente uma estação
+    \item Cada estação possui exatamente um trabalhador
+    \item Precedências devem ser respeitadas: se $i \preceq j$, então $i$ em estação anterior ou igual a $j$
+    \item Tarefas em $I_w$ não podem ser executadas pelo trabalhador $w$
+\end{itemize}
+
+\section{Função Objetivo}
+Minimizar o \textbf{tempo de ciclo} da linha, definido como o maior tempo de execução entre todas as estações.
+
+\subsection*{Informações Disponíveis}
+Para a implementação, dispõe-se de:
+\begin{itemize}
+    \item Número de estações ($m$), trabalhadores ($k$) e tarefas ($n$)
+    \item Matriz de tempos $t_{wi}$ para todas combinações trabalhador-tarefa
+    \item Conjuntos $I_w$ de tarefas impossíveis para cada trabalhador
+    \item Grafo de precedências entre as tarefas
+\end{itemize}
+\chapter{Formulação Matemática do Problema}
+
+A seguir apresenta-se a formulação do problema de Balanceamento de Linhas de Produção com Designação de Trabalhadores (ALWABP) como um modelo de Programação Linear Inteira. O objetivo é minimizar o tempo de ciclo da linha, considerando a heterogeneidade dos trabalhadores, restrições operacionais e relações de precedência entre tarefas.
+
+\subsection{Variáveis de Decisão}
+
+\begin{itemize}
+    \item $v_{sw} \in \{0,1\}$: variável binária que indica se o trabalhador $w$ é alocado à estação $s$.
+    \item $z_{siw} \in \{0,1\}$: variável binária que indica se a tarefa $i$ é executada na estação $s$ pelo trabalhador $w$.
+    \item $C \in \mathbb{R}_+$: variável contínua que representa o tempo de ciclo da linha, definido como o maior tempo de processamento entre as estações.
+\end{itemize}
+
+\subsection{Função Objetivo}
+
+O objetivo consiste em minimizar o tempo de ciclo da linha de produção. O tempo de ciclo é linearizado impondo que, para cada estação, o tempo total de execução das tarefas alocadas ao trabalhador desta estação não exceda $C$.
+
+\[
+\min C
+\]
+
+\subsection{Restrições}
+
+\subsubsection*{(1) Atribuição única de cada tarefa}
+
+Cada tarefa deve ser executada exatamente uma vez, em uma única estação e por um único trabalhador:
+
+\[
+\sum_{s \in S}\sum_{w \in W} z_{siw} = 1 
+\quad \forall i \in N
+\]
+
+\subsubsection*{(2) Um trabalhador por estação}
+
+Cada estação deve possuir exatamente um trabalhador alocado:
+
+\[
+\sum_{w \in W} v_{sw} = 1 
+\quad \forall s \in S
+\]
+
+\subsubsection*{(3) Trabalhador em apenas uma estação}
+
+Cada trabalhador pode ocupar apenas uma estação da linha:
+
+\[
+\sum_{s \in S} v_{sw} = 1 
+\quad \forall w \in W
+\]
+
+\subsubsection*{(4) Vinculação tarefa–estação–trabalhador}
+
+Uma tarefa só pode ser atribuída a um trabalhador se este estiver de fato na estação selecionada:
+
+\[
+z_{siw} \le v_{sw}
+\quad \forall s \in S,\; \forall i \in N,\; \forall w \in W
+\]
+
+\subsubsection*{(5) Incapacidades de execução}
+
+Caso o trabalhador $w$ seja incapaz de executar a tarefa $i$ (ou seja, $i \in I_w$), tal combinação é proibida:
+
+\[
+z_{siw} = 0
+\quad \forall s \in S,\; \forall w \in W,\; \forall i \in I_w
+\]
+
+\subsubsection*{(6) Definição linear do tempo de ciclo}
+
+O tempo total de processamento das tarefas atribuídas à estação $s$ não pode exceder o tempo de ciclo $C$:
+
+\[
+\sum_{i \in N}\sum_{w \in W} t_{wi}\, z_{siw} \le C 
+\quad \forall s \in S
+\]
+
+Essa restrição define o valor de $C$ como o maior carregamento entre as estações.
+
+\subsubsection*{(7) Restrições de precedência}
+
+Se a tarefa $i$ deve preceder a tarefa $j$ no processo produtivo, então $i$ deve ser alocada a uma estação numericamente menor ou igual àquela que executa $j$:
+
+\[
+\sum_{s \in S}\sum_{w \in W} s\, z_{siw}
+\;\le\;
+\sum_{s \in S}\sum_{w \in W} s\, z_{sjw}
+\quad \forall (i,j) \in E
+\]
+
+\subsubsection*{(8) Domínio das variáveis}
+
+\[
+v_{sw}, z_{siw} \in \{0,1\}, 
+\qquad 
+C \ge 0
+\]
+
+
+% ----------------------------------------------------------
+\bibliography{abntex2-modelo-references}
+
+\end{document}
