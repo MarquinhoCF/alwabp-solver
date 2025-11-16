@@ -152,17 +152,95 @@ def solve_alwabp(n, k, times, incapabilities, precedences):
                         task_assignments[i] = (s, w)
                         break
         
-        return int(round(C.x)), solution, task_assignments
+        return C.x, solution, task_assignments, times
     else:
-        return None, None, None
+        return None, None, None, None
+
+def print_solution(cycle_time, worker_assignments, task_assignments, times, n, k):
+    print("=" * 70)
+    print("ALWABP SOLUTION")
+    print("=" * 70)
+    print(f"\n✓ OPTIMAL CYCLE TIME: {cycle_time:.2f}")
+    print(f"  Number of tasks: {n}")
+    print(f"  Number of workers/stations: {k}")
+    print()
+    
+    stations_data = {}
+    for task_id, (station, worker) in task_assignments.items():
+        if station not in stations_data:
+            stations_data[station] = {
+                'worker': worker,
+                'tasks': []
+            }
+        task_time = times[task_id][worker]
+        stations_data[station]['tasks'].append((task_id, task_time))
+    
+    print("-" * 70)
+    print("STATION ASSIGNMENTS")
+    print("-" * 70)
+    
+    for station in sorted(stations_data.keys()):
+        data = stations_data[station]
+        worker = data['worker']
+        tasks = sorted(data['tasks'], key=lambda x: x[0])
+        
+        station_time = sum(t for _, t in tasks)
+        utilization = (station_time / cycle_time) * 100 if cycle_time > 0 else 0
+        idle_time = cycle_time - station_time
+        
+        print(f"\n┌─ STATION {station} (Worker {worker}) " + "─" * (70 - len(f"STATION {station} (Worker {worker}) ") - 3))
+        print(f"│")
+        print(f"│  Tasks assigned: {len(tasks)}")
+        print(f"│  Total time:     {station_time:.2f}")
+        print(f"│  Idle time:      {idle_time:.2f}")
+        print(f"│  Utilization:    {utilization:.1f}%")
+        print(f"│")
+        print(f"│  Task Details:")
+        
+        for task_id, task_time in tasks:
+            print(f"│    • Task {task_id:3d}  →  Time: {task_time:6.2f}")
+        
+        # Progress bar
+        bar_length = 50
+        filled = int((station_time / cycle_time) * bar_length) if cycle_time > 0 else 0
+        bar = "█" * filled + "░" * (bar_length - filled)
+        print(f"│")
+        print(f"│  [{bar}] {utilization:.1f}%")
+        print(f"└" + "─" * 69)
+    
+    # Summary statistics
+    print("\n" + "=" * 70)
+    print("SUMMARY STATISTICS")
+    print("=" * 70)
+    
+    total_task_time = sum(sum(t for _, t in data['tasks']) for data in stations_data.values())
+    total_available_time = cycle_time * k
+    overall_utilization = (total_task_time / total_available_time) * 100 if total_available_time > 0 else 0
+    total_idle = total_available_time - total_task_time
+    
+    print(f"\n  Total task time:       {total_task_time:.2f}")
+    print(f"  Total available time:  {total_available_time:.2f}")
+    print(f"  Total idle time:       {total_idle:.2f}")
+    print(f"  Overall utilization:   {overall_utilization:.1f}%")
+    print(f"  Line efficiency:       {overall_utilization:.1f}%")
+    
+    station_times = [sum(t for _, t in data['tasks']) for data in stations_data.values()]
+    if station_times:
+        min_time = min(station_times)
+        max_time = max(station_times)
+        balance_index = (max_time - min_time) / cycle_time * 100 if cycle_time > 0 else 0
+        print(f"  Balance index:         {balance_index:.1f}% (lower is better)")
+    
+    print("\n" + "=" * 70)
+    
+    print(f"\nCYCLE_TIME: {int(round(cycle_time))}")
 
 if __name__ == "__main__":
     n, k, times, incapabilities, precedences = read_instance()
-    cycle_time, worker_assignments, task_assignments = solve_alwabp(n, k, times, incapabilities, precedences)
+    cycle_time, worker_assignments, task_assignments, times_matrix = solve_alwabp(n, k, times, incapabilities, precedences)
     
     if cycle_time is not None:
-        print(cycle_time)
+        print_solution(cycle_time, worker_assignments, task_assignments, times_matrix, n, k)
     else:
         print("No solution found", file=sys.stderr)
         sys.exit(1)
-
