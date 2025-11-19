@@ -24,7 +24,6 @@ class ALWABPInstance:
         self.incapabilities = incapabilities  # Tarefas que cada trabalhador não pode fazer
         self.precedences = precedences  # Lista de tuplas (i, j) indicando precedências
         
-        # Pré-computar relacionamentos de precedência para acesso rápido
         self.successors = {i: [] for i in range(n)} # sucessores de cada tarefa
         self.predecessors = {i: [] for i in range(n)} # predecessores de cada tarefa
         for i, j in precedences:
@@ -53,7 +52,7 @@ class ALWABPInstance:
         
         # Calcular peso posicional usando ordem topológica
         def calculate_weight(task, memo):
-            # Função recursiva com memoização para calcular o peso
+            # Função recursiva com memorização para calcular o peso
             if task in memo:
                 return memo[task]
             
@@ -101,8 +100,8 @@ class Solution:
     def calculate_cycle_time(self):
         """
         Calcula o tempo de ciclo da solução.
-        O tempo de ciclo é o tempo máximo gasto em qualquer estação,
-        pois determina a velocidade da linha de produção.
+        O tempo de ciclo é o tempo máximo gasto em qualquer estação.
+        Determina a velocidade da linha de produção.
         """
         max_time = 0
         for station in range(self.instance.k):
@@ -584,9 +583,7 @@ def local_search_move_task(solution):
 
 def variable_neighborhood_descent(solution):
     """
-    BUSCA LOCAL INTENSIVA (VND)
-    
-    Variable Neighborhood Descent - Explora sistematicamente diferentes estruturas de vizinhança.
+    BUSCA LOCAL INTENSIVA Variable Neighborhood Descent (VND)
     
     Estratégia:
     1. Define múltiplas vizinhanças (movimentação e troca de tarefas)
@@ -595,7 +592,6 @@ def variable_neighborhood_descent(solution):
     4. Se não houver melhoria, passa para próxima vizinhança
     5. Termina quando todas as vizinhanças foram exploradas sem melhoria
     
-    Vantagem: Evita mínimos locais ao alternar entre diferentes tipos de movimentos
     """
     neighborhoods = [local_search_move_task, local_search_swap_tasks]
     
@@ -614,8 +610,6 @@ def perturbation(solution, strength=2):
     PERTURBAÇÃO
     
     Aplica mudanças aleatórias na solução para escapar de mínimos locais.
-    A perturbação deve ser forte o suficiente para explorar novas regiões,
-    mas não tão forte que destrua a qualidade da solução.
     
     Operações de perturbação:
     1. Mover tarefas aleatoriamente entre estações (70% de chance)
@@ -720,7 +714,7 @@ def acceptance_criterion(current, candidate, temperature):
        - Temperatura alta: mais exploração (aceita mais soluções piores)
        - Temperatura baixa: mais exploitação (aceita menos soluções piores)
     
-    Isso permite escapar de mínimos locais aceitando ocasionalmente soluções piores.
+    Permite escapar de mínimos locais aceitando ocasionalmente soluções piores.
     """
     if candidate.cycle_time < current.cycle_time:
         return True # Sempre aceita melhoria
@@ -854,13 +848,30 @@ def read_instance():
     # Lê precedências
     precedences = []
     while True:
-        line = sys.stdin.readline().strip().split()
+        line = sys.stdin.readline()
+        
+        # Verificar se chegou ao fim do arquivo
+        if not line:
+            break
+            
+        line = line.strip()
+        
+        # Ignorar linhas vazias
         if not line:
             continue
-        i, j = int(line[0]), int(line[1])
-        if i == -1 and j == -1:
-            break
-        precedences.append((i-1, j-1))
+            
+        parts = line.split()
+        
+        if len(parts) < 2:
+            raise ValueError("Linha de precedência inválida: menos de 2 elementos.")
+            
+        try:
+            i, j = int(parts[0]), int(parts[1])
+            if i == -1 and j == -1:
+                break
+            precedences.append((i-1, j-1))
+        except (ValueError, IndexError):
+            raise ValueError("Erro ao ler precedências da instância.")
     
     return n, k, times, incapabilities, precedences
 
