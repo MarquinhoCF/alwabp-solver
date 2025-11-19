@@ -804,7 +804,7 @@ def iterated_local_search(instance, config):
             if improvement_ratio > 0.1:
                 effective_max_time = max_time * 1.2
         
-        if elapsed > time:
+        if elapsed > effective_max_time:
             if verbose:
                 print(f"\nTempo limite atingido: {elapsed:.2f}s", file=sys.stderr)
             break
@@ -1060,12 +1060,11 @@ def main():
         print("Nenhuma solução viável encontrada", file=sys.stderr)
         sys.exit(1)
     
-    # if not args.quiet:
-    #     print(file=sys.stderr)
-    #     solution.print_solution()
-    # else:
-    #     print(f"CYCLE_TIME: {int(round(solution.cycle_time))}")
-    print(f"CYCLE_TIME: {int(round(solution.cycle_time))}")
+    if not args.quiet:
+        print(file=sys.stderr)
+        solution.print_solution()
+    else:
+        print(f"CYCLE_TIME: {int(round(solution.cycle_time))}")
 
 if __name__ == "__main__":
     main()
