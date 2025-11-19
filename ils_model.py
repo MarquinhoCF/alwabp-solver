@@ -8,13 +8,29 @@ Componentes do ILS:
 2. Busca Local: Variable Neighborhood Descent (VND)
 3. Perturbação: Realocação de tarefas e troca de trabalhadores
 4. Critério de Aceitação: Baseado em Simulated Annealing
+
+Opções:
+    --max-iterations N       Número máximo de iterações (default: 10000)
+    --max-time T             Tempo máximo em segundos (default: 300)
+    --optimal-value V        Valor ótimo conhecido (para early stopping)
+    --optimal-tolerance T    Tolerância para considerar ótimo atingido (default: 0.01)
+    --adaptive-timeout       Ativa timeout adaptativo (default: True)
+    --min-improvement N      Iterações mínimas sem melhoria antes de aumentar perturbação (default: 50)
+    --max-stagnation N       Iterações máximas de estagnação antes de restart (default: 500)
+    --cooling-rate R         Taxa de resfriamento SA (default: 0.95)
+    --initial-temp-factor F  Fator para temperatura inicial (default: 0.1)
+    --random-seed S          Seed para reprodutibilidade (default: None)
+    --verbose                Modo verboso (default: False)
+
+Exemplo:
+    python3 ils_optimized.py --optimal-value 316 --max-time 600 < instance.txt
 """
 
+import argparse
 import sys
 import random
 import math
 import time
-from copy import deepcopy
 
 class ALWABPInstance:
     def __init__(self, n, k, times, incapabilities, precedences):
@@ -618,9 +634,10 @@ def perturbation(solution, strength=2):
     O parâmetro 'strength' controla quantas perturbações são aplicadas.
     """
     new_solution = solution.copy()
+    max_iterations = strength * 10
     
     # Aplicar múltiplas perturbações
-    for _ in range(strength):
+    for _ in range(max_iterations):
         if random.random() < 0.7:  # 70% de chance: Mover tarefa
             # Selecionar estação com tarefas
             stations_with_tasks = [s for s in range(new_solution.instance.k) 
@@ -724,60 +741,85 @@ def acceptance_criterion(current, candidate, temperature):
     probability = math.exp(-delta / temperature)
     return random.random() < probability
 
-def iterated_local_search(instance, max_iterations=1000, max_time=300):
-    """
-    ITERATED LOCAL SEARCH (ILS)
-
-    FLUXO DO ALGORITMO:
-    ┌─────────────────────────────────────────┐
-    │ 1. Gerar solução inicial (RPW)          │
-    │ 2. Aplicar busca local (VND)            │
-    │ 3. Guardar como melhor solução          │
-    └──────────────┬──────────────────────────┘
-                   │
-                   ▼
-    ┌──────────────────────────────────────────┐
-    │         LOOP PRINCIPAL (ILS)             │
-    ├──────────────────────────────────────────┤
-    │ 4. Perturbar solução atual               │
-    │ 5. Aplicar busca local (VND)             │
-    │ 6. Avaliar critério de aceitação         │
-    │    - Se aceita: atualizar solução atual  │
-    │    - Se melhor: atualizar melhor global  │
-    │ 7. Ajustar parâmetros (temperatura, etc) │
-    │ 8. Repetir até critério de parada        │
-    └──────────────────────────────────────────┘
-    
-    PARÂMETROS ADAPTATIVOS:
-    - Temperatura: resfriamento gradual (exploração → exploitação)
-    - Força de perturbação: aumenta se ficar preso em mínimo local
-    """
+def iterated_local_search(instance, config):
     start_time = time.time()
     
+    # Extrair configurações
+    max_iterations = config.get('max_iterations', 10000)
+    max_time = config.get('max_time', 300)
+    optimal_value = config.get('optimal_value', None)
+    optimal_tolerance = config.get('optimal_tolerance', 0.01)
+    adaptive_timeout = config.get('adaptive_timeout', True)
+    min_improvement = config.get('min_improvement', 50)
+    max_stagnation = config.get('max_stagnation', 1000)
+    cooling_rate = config.get('cooling_rate', 0.95)
+    initial_temp_factor = config.get('initial_temp_factor', 0.1)
+    verbose = config.get('verbose', False)
+    
+    # Geração de solução inicial
+    if verbose:
+        print("Gerando solução inicial...", file=sys.stderr)
+
     # ETAPA 1: GERAR SOLUÇÃO INICIAL
-    print("Gerando solução inicial...", file=sys.stderr)
     current = construct_rpw_solution(instance)
     variable_neighborhood_descent(current)
     
     best = current.copy()
-    print(f"Tempo de ciclo inicial: {best.cycle_time:.2f}", file=sys.stderr)
     
-    # PARÂMETROS DO ILS
-    temperature = best.cycle_time * 0.1  # Temperatura inicial (10% do tempo de ciclo)
-    cooling_rate = 0.95  # Taxa de resfriamento (95% a cada iteração)
-    perturbation_strength = 2  # Força inicial da perturbação
-    iterations_without_improvement = 0  # Contador para adaptação
+    if verbose:
+        print(f"Tempo de ciclo inicial: {best.cycle_time:.2f}", file=sys.stderr)
+        if optimal_value:
+            gap = ((best.cycle_time - optimal_value) / optimal_value) * 100
+            print(f"Gap para ótimo: {gap:.2f}%", file=sys.stderr)
     
-    # LOOP PRINCIPAL DO ILS
+    # Early stopping se já atingiu o ótimo
+    if optimal_value and abs(best.cycle_time - optimal_value) <= optimal_tolerance:
+        print(f"\nÓTIMO ATINGIDO na solução inicial! Cycle time: {best.cycle_time:.2f}", 
+              file=sys.stderr)
+        return best
+    
+    # Parâmetros do ILS
+    temperature = best.cycle_time * initial_temp_factor
+    perturbation_strength = 2
+    iterations_without_improvement = 0
+    iterations_without_any_change = 0
+    restart_count = 0
+    
+    # Timeout adaptativo
+    effective_max_time = max_time
+    improvement_rate_history = []
+    
     iteration = 0
-    while iteration < max_iterations and time.time() - start_time < max_time:
+    last_log_time = start_time
+    
+    while iteration < max_iterations:
+        elapsed = time.time() - start_time
+        
+        # Ajuste adaptativo de timeout
+        if adaptive_timeout and iteration > 100 and iteration % 50 == 0:
+            recent_improvements = sum(1 for i in improvement_rate_history[-50:] if i > 0)
+            improvement_ratio = recent_improvements / min(50, len(improvement_rate_history))
+            
+            # Se está melhorando bem, dá mais tempo
+            if improvement_ratio > 0.1:
+                effective_max_time = max_time * 1.2
+        
+        if elapsed > time:
+            if verbose:
+                print(f"\nTempo limite atingido: {elapsed:.2f}s", file=sys.stderr)
+            break
+        
         # ETAPA 2: PERTURBAÇÃO
         # Aplicar mudanças aleatórias para escapar do mínimo local atual
         candidate = perturbation(current, perturbation_strength)
-        
+
         # ETAPA 3: BUSCA LOCAL (VND)
         # Intensificar a busca na região perturbada
         variable_neighborhood_descent(candidate)
+        
+        # Registrar se houve melhoria
+        improved = candidate.cycle_time < best.cycle_time
+        improvement_rate_history.append(1 if improved else 0)
         
         # ETAPA 4: CRITÉRIO DE ACEITAÇÃO
         # Decidir se aceita a nova solução (Simulated Annealing)
@@ -786,38 +828,96 @@ def iterated_local_search(instance, max_iterations=1000, max_time=300):
             
             # Verificar se encontrou novo melhor global
             if current.cycle_time < best.cycle_time and current.is_feasible():
+                improvement = best.cycle_time - current.cycle_time
                 best = current.copy()
-                print(f"Iteração {iteration}: Novo melhor = {best.cycle_time:.2f}", file=sys.stderr)
+                
+                if verbose:
+                    gap_str = ""
+                    if optimal_value:
+                        gap = ((best.cycle_time - optimal_value) / optimal_value) * 100
+                        gap_str = f" (gap: {gap:.2f}%)"
+                    print(f"Iter {iteration}: MELHORIA {best.cycle_time:.2f}{gap_str} [Δ={improvement:.2f}]", 
+                          file=sys.stderr)
+                
                 iterations_without_improvement = 0
-                perturbation_strength = 2  # Resetar força de perturbação
+                iterations_without_any_change = 0
+                perturbation_strength = 2
+                
+                # Early stopping
+                if optimal_value and abs(best.cycle_time - optimal_value) <= optimal_tolerance:
+                    print(f"\nÓTIMO ATINGIDO! Cycle time: {best.cycle_time:.2f} em {elapsed:.2f}s", 
+                          file=sys.stderr)
+                    break
             else:
                 iterations_without_improvement += 1
+                iterations_without_any_change += 1
+        else:
+            iterations_without_any_change += 1
         
-        # ETAPA 5: ADAPTAÇÃO DE PARÂMETROS
-        
-        # Aumentar força de perturbação se estagnado
-        # Isso ajuda a escapar de mínimos locais difíceis
-        if iterations_without_improvement > 50:
+        # Adaptação de perturbação baseada em estagnação
+        if iterations_without_improvement > min_improvement:
             perturbation_strength = min(5, perturbation_strength + 1)
             iterations_without_improvement = 0
+            if verbose:
+                print(f"Iter {iteration}: Aumentando perturbação para {perturbation_strength}", 
+                      file=sys.stderr)
         
-        # Resfriamento da temperatura (Simulated Annealing)
-        # Temperatura alta no início: mais exploração
-        # Temperatura baixa no final: mais exploitação
+        # Restart após estagnação prolongada
+        if iterations_without_any_change > max_stagnation:
+            if verbose:
+                print(f"\nRESTART devido a estagnação (iter {iteration})", file=sys.stderr)
+            
+            # Gerar nova solução inicial
+            current = construct_rpw_solution(instance)
+            variable_neighborhood_descent(current)
+            
+            # Resetar parâmetros
+            temperature = best.cycle_time * initial_temp_factor
+            perturbation_strength = 3  # Um pouco mais forte após restart
+            iterations_without_any_change = 0
+            iterations_without_improvement = 0
+            restart_count += 1
+            
+            # Limitar número de restarts para evitar ciclo infinito
+            if restart_count > 5:
+                if verbose:
+                    print(f"Limite de restarts atingido ({restart_count})", file=sys.stderr)
+                break
+        
+        # Resfriamento da temperatura
         temperature *= cooling_rate
         if temperature < 0.01:
-            # Reiniciar temperatura se muito baixa (diversificação)
-            temperature = best.cycle_time * 0.1
+            temperature = best.cycle_time * initial_temp_factor
         
         iteration += 1
-
-        if iteration % 100 == 0:
-            elapsed = time.time() - start_time
-            print(f"Iteração {iteration}, Atual: {current.cycle_time:.2f} - {'Viável' if current.is_feasible() else 'Inviável'}, Melhor: {best.cycle_time:.2f}, Tempo: {elapsed:.1f}s", file=sys.stderr)
-
+        
+        # Log periódico
+        if verbose and (time.time() - last_log_time) > 10:
+            last_log_time = time.time()
+            print(f"Iter {iteration}: Atual={current.cycle_time:.2f} ({'Viável' if current.is_feasible() else 'Inviável'}), "
+                  f"Melhor Viável={best.cycle_time:.2f}, "
+                  f"Tempo={elapsed:.1f}s, "
+                  f"Temp={temperature:.2f}, "
+                  f"Pert={perturbation_strength}",
+                  file=sys.stderr)
+    
     elapsed = time.time() - start_time
-    print(f"\nILS finalizado em {elapsed:.2f}s após {iteration} iterações", file=sys.stderr)
-    print(f"Melhor tempo de ciclo final: {best.cycle_time:.2f}", file=sys.stderr)
+    
+    if verbose:
+        print(f"\n{'='*70}", file=sys.stderr)
+        print(f"ILS FINALIZADO", file=sys.stderr)
+        print(f"{'='*70}", file=sys.stderr)
+        print(f"Tempo total: {elapsed:.2f}s", file=sys.stderr)
+        print(f"Iterações: {iteration}", file=sys.stderr)
+        print(f"Restarts: {restart_count}", file=sys.stderr)
+        print(f"Melhor cycle time: {best.cycle_time:.2f}", file=sys.stderr)
+        
+        if optimal_value:
+            gap = ((best.cycle_time - optimal_value) / optimal_value) * 100
+            print(f"Valor ótimo conhecido: {optimal_value}", file=sys.stderr)
+            print(f"Gap final: {gap:.2f}%", file=sys.stderr)
+        
+        print(f"{'='*70}", file=sys.stderr)
     
     return best
 
@@ -875,14 +975,97 @@ def read_instance():
     
     return n, k, times, incapabilities, precedences
 
-if __name__ == "__main__":
-    n, k, times, incapabilities, precedences = read_instance()
-    instance = ALWABPInstance(n, k, times, incapabilities, precedences)
+def parse_arguments():
+    parser = argparse.ArgumentParser(
+        description='ILS Otimizado para ALWABP com estratégias de poda',
+        formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     
-    solution = iterated_local_search(instance, max_iterations=10000, max_time=300)
+    parser.add_argument('--max-iterations', type=int, default=10000,
+                       help='Número máximo de iterações (default: 10000)')
     
-    if solution and solution.is_feasible():
-        solution.print_solution()
-    else:
-        print("No feasible solution found", file=sys.stderr)
+    parser.add_argument('--max-time', type=float, default=300,
+                       help='Tempo máximo em segundos (default: 300)')
+    
+    parser.add_argument('--optimal-value', type=float, default=None,
+                       help='Valor ótimo conhecido para early stopping')
+    
+    parser.add_argument('--optimal-tolerance', type=float, default=0.01,
+                       help='Tolerância para considerar ótimo atingido (default: 0.01)')
+    
+    parser.add_argument('--adaptive-timeout', action='store_true', default=True,
+                       help='Ativa timeout adaptativo (default: True)')
+    
+    parser.add_argument('--no-adaptive-timeout', action='store_false', dest='adaptive_timeout',
+                       help='Desativa timeout adaptativo')
+    
+    parser.add_argument('--min-improvement', type=int, default=50,
+                       help='Iterações sem melhoria antes de aumentar perturbação (default: 50)')
+    
+    parser.add_argument('--max-stagnation', type=int, default=1000,
+                       help='Iterações máximas de estagnação antes de restart (default: 1000)')
+    
+    parser.add_argument('--cooling-rate', type=float, default=0.95,
+                       help='Taxa de resfriamento do Simulated Annealing (default: 0.95)')
+    
+    parser.add_argument('--initial-temp-factor', type=float, default=0.1,
+                       help='Fator para temperatura inicial (default: 0.1)')
+    
+    parser.add_argument('--random-seed', type=int, default=None,
+                       help='Seed para reprodutibilidade (default: None - aleatório)')
+    
+    parser.add_argument('--verbose', action='store_true',
+                       help='Modo verboso - imprime progresso detalhado')
+    
+    parser.add_argument('--quiet', action='store_true',
+                       help='Modo silencioso - imprime apenas a solução final')
+    
+    return parser.parse_args()
+
+def main():
+    args = parse_arguments()
+    
+    if args.random_seed is not None:
+        random.seed(args.random_seed)
+    
+    try:
+        n, k, times, incapabilities, precedences = read_instance()
+        instance = ALWABPInstance(n, k, times, incapabilities, precedences)
+    except Exception as e:
+        print(f"Erro ao ler instância: {e}", file=sys.stderr)
         sys.exit(1)
+    
+    config = {
+        'max_iterations': args.max_iterations,
+        'max_time': args.max_time,
+        'optimal_value': args.optimal_value,
+        'optimal_tolerance': args.optimal_tolerance,
+        'adaptive_timeout': args.adaptive_timeout,
+        'min_improvement': args.min_improvement,
+        'max_stagnation': args.max_stagnation,
+        'cooling_rate': args.cooling_rate,
+        'initial_temp_factor': args.initial_temp_factor,
+        'verbose': args.verbose and not args.quiet
+    }
+    
+    try:
+        solution = iterated_local_search(instance, config)
+    except Exception as e:
+        print(f"Erro durante execução: {e}", file=sys.stderr)
+        import traceback
+        traceback.print_exc(file=sys.stderr)
+        sys.exit(1)
+
+    if not solution or not solution.is_feasible():
+        print("Nenhuma solução viável encontrada", file=sys.stderr)
+        sys.exit(1)
+    
+    # if not args.quiet:
+    #     print(file=sys.stderr)
+    #     solution.print_solution()
+    # else:
+    #     print(f"CYCLE_TIME: {int(round(solution.cycle_time))}")
+    print(f"CYCLE_TIME: {int(round(solution.cycle_time))}")
+
+if __name__ == "__main__":
+    main()
