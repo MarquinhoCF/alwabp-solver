@@ -20,65 +20,14 @@ Constraints:
 (7) Precedence constraints: Σ_s∈S Σ_w∈W s * z_siw ≤ Σ_s∈S Σ_w∈W s * z_sjw, ∀(i,j) ∈ E
 """
 
+import argparse
 import sys
 import gurobipy as gp
 from gurobipy import GRB
 
-def read_instance():
-    n = int(sys.stdin.readline().strip())
-    
-    k = None
-    times = []
-    incapabilities = {}
+from read_instances import read_instance
 
-    # Lê matriz de tempos
-    for i in range(n):
-        line = sys.stdin.readline().strip().split()
-        task_times = []
-        for w, time_str in enumerate(line):
-            if time_str == 'Inf' or time_str == 'inf':
-                # Registrar incapacidade
-                if w not in incapabilities:
-                    incapabilities[w] = []
-                incapabilities[w].append(i)
-                task_times.append(float('inf'))
-            else:
-                task_times.append(float(time_str))
-        times.append(task_times)
-        if k is None:
-            k = len(line)
-    
-    # Lê precedências
-    precedences = []
-    while True:
-        line = sys.stdin.readline()
-        
-        # Verificar se chegou ao fim do arquivo
-        if not line:
-            break
-            
-        line = line.strip()
-        
-        # Ignorar linhas vazias
-        if not line:
-            continue
-            
-        parts = line.split()
-        
-        if len(parts) < 2:
-            raise ValueError("Linha de precedência inválida: menos de 2 elementos.")
-            
-        try:
-            i, j = int(parts[0]), int(parts[1])
-            if i == -1 and j == -1:
-                break
-            precedences.append((i-1, j-1))
-        except (ValueError, IndexError):
-            raise ValueError("Erro ao ler precedências da instância.")
-    
-    return n, k, times, incapabilities, precedences
-
-def solve_alwabp(n, k, times, incapabilities, precedences):
+def solve_alwabp(n, k, times, incapabilities, precedences, time_limit=None):
     """
     Solve ALWABP using Gurobi
     
@@ -93,6 +42,8 @@ def solve_alwabp(n, k, times, incapabilities, precedences):
     
     model = gp.Model("ALWABP")
     model.setParam('OutputFlag', 0)
+    if time_limit is not None:
+        model.setParam('TimeLimit', time_limit)
     
     S = range(m)
     W = range(k)
@@ -252,15 +203,31 @@ def print_solution(cycle_time, worker_assignments, task_assignments, times, n, k
         print(f"  Balance index:         {balance_index:.1f}% (lower is better)")
     
     print("\n" + "=" * 70)
+
+
+def parse_arguments():
+    parser = argparse.ArgumentParser(
+        description='ILS para ALWABP com estratégias de poda',
+        formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+
+    parser.add_argument('--max-time', type=float, default=300,
+                       help='Tempo máximo em segundos (default: 300)')
     
-    print(f"\nCYCLE_TIME: {int(round(cycle_time))}")
+    parser.add_argument('--verbose', action='store_true',
+                       help='Modo verboso - imprime progresso detalhado')
+    
+    return parser.parse_args()
 
 if __name__ == "__main__":
+    args = parse_arguments()
     n, k, times, incapabilities, precedences = read_instance()
-    cycle_time, worker_assignments, task_assignments, times_matrix = solve_alwabp(n, k, times, incapabilities, precedences)
+    cycle_time, worker_assignments, task_assignments, times_matrix = solve_alwabp(n, k, times, incapabilities, precedences, time_limit=args.max_time)
     
     if cycle_time is not None:
-        print_solution(cycle_time, worker_assignments, task_assignments, times_matrix, n, k)
+        if args.verbose:
+            print_solution(cycle_time, worker_assignments, task_assignments, times_matrix, n, k)
+        print(f"\nCYCLE_TIME: {int(round(cycle_time))}")
     else:
         print("No solution found", file=sys.stderr)
         sys.exit(1)

@@ -13,13 +13,8 @@ Opções:
     --max-iterations N       Número máximo de iterações (default: 10000)
     --max-time T             Tempo máximo em segundos (default: 300)
     --optimal-value V        Valor ótimo conhecido (para early stopping)
-    --optimal-tolerance T    Tolerância para considerar ótimo atingido (default: 0.01)
-    --adaptive-timeout       Ativa timeout adaptativo (default: True)
-    --min-improvement N      Iterações mínimas sem melhoria antes de aumentar perturbação (default: 50)
-    --max-stagnation N       Iterações máximas de estagnação antes de restart (default: 500)
-    --cooling-rate R         Taxa de resfriamento SA (default: 0.95)
-    --initial-temp-factor F  Fator para temperatura inicial (default: 0.1)
-    --random-seed S          Seed para reprodutibilidade (default: None)
+    --adaptive-timeout       Ativa timeout adaptativo (default: False)
+    --seed S          Seed para reprodutibilidade (default: None)
     --verbose                Modo verboso (default: False)
 
 Exemplo:
@@ -31,6 +26,8 @@ import sys
 import random
 import math
 import time
+
+from gurobi_model import read_instance
 
 class ALWABPInstance:
     def __init__(self, n, k, times, incapabilities, precedences):
@@ -48,6 +45,8 @@ class ALWABPInstance:
         
         # Calcular pesos posicionais para a heurística RPW
         self.positional_weights = self._calculate_positional_weights()
+
+        self.initial_cycle_time = None  # Armazena o tempo de ciclo da solução inicial
     
     def _calculate_positional_weights(self):
         """
@@ -251,8 +250,6 @@ class Solution:
             print(f"  Balance index:         {balance_index:.1f}% (lower is better)")
         
         print("\n" + "=" * 70)
-        
-        print(f"\nCYCLE_TIME: {int(round(cycle_time))}")
 
 def construct_rpw_solution(instance):
     """
@@ -748,13 +745,15 @@ def iterated_local_search(instance, config):
     max_iterations = config.get('max_iterations', 10000)
     max_time = config.get('max_time', 300)
     optimal_value = config.get('optimal_value', None)
-    optimal_tolerance = config.get('optimal_tolerance', 0.01)
-    adaptive_timeout = config.get('adaptive_timeout', True)
-    min_improvement = config.get('min_improvement', 50)
-    max_stagnation = config.get('max_stagnation', 1000)
-    cooling_rate = config.get('cooling_rate', 0.95)
-    initial_temp_factor = config.get('initial_temp_factor', 0.1)
+    adaptive_timeout = config.get('adaptive_timeout', False)
     verbose = config.get('verbose', False)
+
+    # Parâmetros do algoritmo
+    optimal_tolerance = 0.01
+    min_improvement = 50
+    max_stagnation = 1000
+    cooling_rate = 0.95
+    initial_temp_factor = 0.1
     
     # Geração de solução inicial
     if verbose:
@@ -765,9 +764,11 @@ def iterated_local_search(instance, config):
     variable_neighborhood_descent(current)
     
     best = current.copy()
+
+    instance.initial_cycle_time = best.cycle_time
     
     if verbose:
-        print(f"Tempo de ciclo inicial: {best.cycle_time:.2f}", file=sys.stderr)
+        print(f"Tempo de ciclo inicial: {instance.initial_cycle_time:.2f}", file=sys.stderr)
         if optimal_value:
             gap = ((best.cycle_time - optimal_value) / optimal_value) * 100
             print(f"Gap para ótimo: {gap:.2f}%", file=sys.stderr)
@@ -877,12 +878,6 @@ def iterated_local_search(instance, config):
             iterations_without_any_change = 0
             iterations_without_improvement = 0
             restart_count += 1
-            
-            # Limitar número de restarts para evitar ciclo infinito
-            if restart_count > 5:
-                if verbose:
-                    print(f"Limite de restarts atingido ({restart_count})", file=sys.stderr)
-                break
         
         # Resfriamento da temperatura
         temperature *= cooling_rate
@@ -910,7 +905,7 @@ def iterated_local_search(instance, config):
         print(f"Tempo total: {elapsed:.2f}s", file=sys.stderr)
         print(f"Iterações: {iteration}", file=sys.stderr)
         print(f"Restarts: {restart_count}", file=sys.stderr)
-        print(f"Melhor cycle time: {best.cycle_time:.2f}", file=sys.stderr)
+        print(f"Tempo de ciclo inicial: {instance.initial_cycle_time:.2f}", file=sys.stderr)
         
         if optimal_value:
             gap = ((best.cycle_time - optimal_value) / optimal_value) * 100
@@ -921,63 +916,9 @@ def iterated_local_search(instance, config):
     
     return best
 
-def read_instance():
-    n = int(sys.stdin.readline().strip())
-    
-    k = None
-    times = []
-    incapabilities = {}
-
-    # Lê matriz de tempos
-    for i in range(n):
-        line = sys.stdin.readline().strip().split()
-        task_times = []
-        for w, time_str in enumerate(line):
-            if time_str == 'Inf' or time_str == 'inf':
-                # Registrar incapacidade
-                if w not in incapabilities:
-                    incapabilities[w] = []
-                incapabilities[w].append(i)
-                task_times.append(float('inf'))
-            else:
-                task_times.append(float(time_str))
-        times.append(task_times)
-        if k is None:
-            k = len(line)
-    
-    # Lê precedências
-    precedences = []
-    while True:
-        line = sys.stdin.readline()
-        
-        # Verificar se chegou ao fim do arquivo
-        if not line:
-            break
-            
-        line = line.strip()
-        
-        # Ignorar linhas vazias
-        if not line:
-            continue
-            
-        parts = line.split()
-        
-        if len(parts) < 2:
-            raise ValueError("Linha de precedência inválida: menos de 2 elementos.")
-            
-        try:
-            i, j = int(parts[0]), int(parts[1])
-            if i == -1 and j == -1:
-                break
-            precedences.append((i-1, j-1))
-        except (ValueError, IndexError):
-            raise ValueError("Erro ao ler precedências da instância.")
-    
-    return n, k, times, incapabilities, precedences
-
 def parse_arguments():
     parser = argparse.ArgumentParser(
-        description='ILS Otimizado para ALWABP com estratégias de poda',
+        description='ILS para ALWABP com estratégias de poda',
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
     
@@ -990,43 +931,22 @@ def parse_arguments():
     parser.add_argument('--optimal-value', type=float, default=None,
                        help='Valor ótimo conhecido para early stopping')
     
-    parser.add_argument('--optimal-tolerance', type=float, default=0.01,
-                       help='Tolerância para considerar ótimo atingido (default: 0.01)')
+    parser.add_argument('--adaptive-timeout', action='store_false', default=False,
+                       help='Ativa timeout adaptativo (default: False)')
     
-    parser.add_argument('--adaptive-timeout', action='store_true', default=True,
-                       help='Ativa timeout adaptativo (default: True)')
-    
-    parser.add_argument('--no-adaptive-timeout', action='store_false', dest='adaptive_timeout',
-                       help='Desativa timeout adaptativo')
-    
-    parser.add_argument('--min-improvement', type=int, default=50,
-                       help='Iterações sem melhoria antes de aumentar perturbação (default: 50)')
-    
-    parser.add_argument('--max-stagnation', type=int, default=1000,
-                       help='Iterações máximas de estagnação antes de restart (default: 1000)')
-    
-    parser.add_argument('--cooling-rate', type=float, default=0.95,
-                       help='Taxa de resfriamento do Simulated Annealing (default: 0.95)')
-    
-    parser.add_argument('--initial-temp-factor', type=float, default=0.1,
-                       help='Fator para temperatura inicial (default: 0.1)')
-    
-    parser.add_argument('--random-seed', type=int, default=None,
+    parser.add_argument('--seed', type=int, default=None,
                        help='Seed para reprodutibilidade (default: None - aleatório)')
     
     parser.add_argument('--verbose', action='store_true',
                        help='Modo verboso - imprime progresso detalhado')
-    
-    parser.add_argument('--quiet', action='store_true',
-                       help='Modo silencioso - imprime apenas a solução final')
     
     return parser.parse_args()
 
 def main():
     args = parse_arguments()
     
-    if args.random_seed is not None:
-        random.seed(args.random_seed)
+    if args.seed is not None:
+        random.seed(args.seed)
     
     try:
         n, k, times, incapabilities, precedences = read_instance()
@@ -1039,13 +959,8 @@ def main():
         'max_iterations': args.max_iterations,
         'max_time': args.max_time,
         'optimal_value': args.optimal_value,
-        'optimal_tolerance': args.optimal_tolerance,
         'adaptive_timeout': args.adaptive_timeout,
-        'min_improvement': args.min_improvement,
-        'max_stagnation': args.max_stagnation,
-        'cooling_rate': args.cooling_rate,
-        'initial_temp_factor': args.initial_temp_factor,
-        'verbose': args.verbose and not args.quiet
+        'verbose': args.verbose
     }
     
     try:
@@ -1060,11 +975,12 @@ def main():
         print("Nenhuma solução viável encontrada", file=sys.stderr)
         sys.exit(1)
     
-    if not args.quiet:
+    if args.verbose:
         print(file=sys.stderr)
         solution.print_solution()
-    else:
-        print(f"CYCLE_TIME: {int(round(solution.cycle_time))}")
+
+    print(f"\nINITIAL_CYCLE_TIME: {int(round(solution.instance.initial_cycle_time))}")
+    print(f"\nFINAL_CYCLE_TIME: {int(round(solution.cycle_time))}")
 
 if __name__ == "__main__":
     main()
