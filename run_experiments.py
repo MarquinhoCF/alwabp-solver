@@ -220,7 +220,7 @@ def main():
     ils_single_output_csv = 'results_ils_single_results.csv'
     
     num_replications = 5
-    ils_timeout = 300
+    ils_timeout = 500
     gurobi_timeout = 300
     
     print("=" * 80)
