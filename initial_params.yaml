@@ -1,7 +1,6 @@
 cooling_rate: 0.95
 improvement_threshold: 50
 initial_temp_factor: 0.1
-optimal_tolerance: 0.01
 perturbation_initial: 2
 perturbation_max: 5
 stagnation_threshold: 1000

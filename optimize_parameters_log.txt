@@ -1,0 +1,54 @@
+======================================================================
+OTIMIZAÇÃO DE PARÂMETROS - ILS ALWABP
+======================================================================
+Instância: ./alwabp/72_ton
+Tempo limite por trial: 120s
+Número de trials: 20
+Valor ótimo conhecido: 57.0
+======================================================================
+
+[I 2025-12-04 11:33:31,583] A new study created in memory with name: ILS_ALWABP_Optimization
+[I 2025-12-04 11:35:31,662] Trial 1 finished with value: 91.0 and parameters: {'cooling_rate': 0.9853695826886988, 'improvement_threshold': 23, 'initial_temp_factor': 0.20992893667741852, 'perturbation_initial': 1, 'perturbation_max': 5, 'stagnation_threshold': 1128}. Best is trial 1 with value: 91.0.
+[I 2025-12-04 11:35:31,664] Trial 0 finished with value: 85.0 and parameters: {'cooling_rate': 0.9606008477510661, 'improvement_threshold': 142, 'initial_temp_factor': 0.29674713096080857, 'perturbation_initial': 2, 'perturbation_max': 7, 'stagnation_threshold': 1830}. Best is trial 0 with value: 85.0.
+[I 2025-12-04 11:35:31,689] Trial 3 finished with value: 110.0 and parameters: {'cooling_rate': 0.9631561464531776, 'improvement_threshold': 192, 'initial_temp_factor': 0.1874382653155543, 'perturbation_initial': 4, 'perturbation_max': 8, 'stagnation_threshold': 1228}. Best is trial 0 with value: 85.0.
+[I 2025-12-04 11:35:31,704] Trial 2 finished with value: 97.0 and parameters: {'cooling_rate': 0.8522995457940531, 'improvement_threshold': 95, 'initial_temp_factor': 0.1748747936619478, 'perturbation_initial': 4, 'perturbation_max': 4, 'stagnation_threshold': 1569}. Best is trial 0 with value: 85.0.
+[I 2025-12-04 11:37:31,701] Trial 4 finished with value: 101.0 and parameters: {'cooling_rate': 0.9496398498636733, 'improvement_threshold': 179, 'initial_temp_factor': 0.2520118474363675, 'perturbation_initial': 2, 'perturbation_max': 7, 'stagnation_threshold': 1789}. Best is trial 0 with value: 85.0.
+[I 2025-12-04 11:37:31,730] Trial 5 finished with value: 98.0 and parameters: {'cooling_rate': 0.8653910894973141, 'improvement_threshold': 119, 'initial_temp_factor': 0.15055144436532614, 'perturbation_initial': 2, 'perturbation_max': 4, 'stagnation_threshold': 1277}. Best is trial 0 with value: 85.0.
+[I 2025-12-04 11:37:31,752] Trial 6 finished with value: 86.0 and parameters: {'cooling_rate': 0.9251231414679715, 'improvement_threshold': 94, 'initial_temp_factor': 0.2065844081990853, 'perturbation_initial': 1, 'perturbation_max': 6, 'stagnation_threshold': 1736}. Best is trial 0 with value: 85.0.
+[I 2025-12-04 11:37:31,756] Trial 7 finished with value: 88.0 and parameters: {'cooling_rate': 0.9190998223909165, 'improvement_threshold': 172, 'initial_temp_factor': 0.10746514036695025, 'perturbation_initial': 2, 'perturbation_max': 5, 'stagnation_threshold': 1955}. Best is trial 0 with value: 85.0.
+[I 2025-12-04 11:39:31,760] Trial 8 finished with value: 98.0 and parameters: {'cooling_rate': 0.9356293009422085, 'improvement_threshold': 27, 'initial_temp_factor': 0.15121817528255643, 'perturbation_initial': 2, 'perturbation_max': 6, 'stagnation_threshold': 1247}. Best is trial 0 with value: 85.0.
+[I 2025-12-04 11:39:31,777] Trial 9 finished with value: 87.0 and parameters: {'cooling_rate': 0.8818538426937024, 'improvement_threshold': 143, 'initial_temp_factor': 0.06180104989349479, 'perturbation_initial': 2, 'perturbation_max': 7, 'stagnation_threshold': 1634}. Best is trial 0 with value: 85.0.
+[I 2025-12-04 11:39:31,798] Trial 10 finished with value: 99.0 and parameters: {'cooling_rate': 0.893163328152116, 'improvement_threshold': 146, 'initial_temp_factor': 0.06674539739023623, 'perturbation_initial': 4, 'perturbation_max': 7, 'stagnation_threshold': 1654}. Best is trial 0 with value: 85.0.
+[I 2025-12-04 11:39:31,819] Trial 11 finished with value: 109.0 and parameters: {'cooling_rate': 0.9125027512038527, 'improvement_threshold': 62, 'initial_temp_factor': 0.15861264844326317, 'perturbation_initial': 3, 'perturbation_max': 8, 'stagnation_threshold': 1710}. Best is trial 0 with value: 85.0.
+[I 2025-12-04 11:41:31,818] Trial 12 finished with value: 111.0 and parameters: {'cooling_rate': 0.9033185892354313, 'improvement_threshold': 34, 'initial_temp_factor': 0.1377326433640783, 'perturbation_initial': 3, 'perturbation_max': 4, 'stagnation_threshold': 1564}. Best is trial 0 with value: 85.0.
+[I 2025-12-04 11:41:31,843] Trial 14 finished with value: 75.0 and parameters: {'cooling_rate': 0.9150589351519911, 'improvement_threshold': 77, 'initial_temp_factor': 0.2945384467285721, 'perturbation_initial': 1, 'perturbation_max': 6, 'stagnation_threshold': 511}. Best is trial 14 with value: 75.0.
+[I 2025-12-04 11:41:31,866] Trial 13 finished with value: 99.0 and parameters: {'cooling_rate': 0.9898675316273232, 'improvement_threshold': 60, 'initial_temp_factor': 0.27796855486635386, 'perturbation_initial': 3, 'perturbation_max': 8, 'stagnation_threshold': 541}. Best is trial 14 with value: 75.0.
+[I 2025-12-04 11:41:31,888] Trial 15 finished with value: 73.0 and parameters: {'cooling_rate': 0.9751067256397791, 'improvement_threshold': 89, 'initial_temp_factor': 0.27912777127395205, 'perturbation_initial': 1, 'perturbation_max': 6, 'stagnation_threshold': 526}. Best is trial 15 with value: 73.0.
+[I 2025-12-04 11:43:31,910] Trial 17 finished with value: 89.0 and parameters: {'cooling_rate': 0.9747721901676958, 'improvement_threshold': 64, 'initial_temp_factor': 0.2907019447292555, 'perturbation_initial': 1, 'perturbation_max': 6, 'stagnation_threshold': 750}. Best is trial 15 with value: 73.0.
+[I 2025-12-04 11:43:31,921] Trial 16 finished with value: 82.0 and parameters: {'cooling_rate': 0.9809751537218491, 'improvement_threshold': 93, 'initial_temp_factor': 0.2992266409769605, 'perturbation_initial': 1, 'perturbation_max': 6, 'stagnation_threshold': 664}. Best is trial 15 with value: 73.0.
+[I 2025-12-04 11:43:31,956] Trial 19 finished with value: 98.0 and parameters: {'cooling_rate': 0.9401535217646481, 'improvement_threshold': 70, 'initial_temp_factor': 0.24004862529448506, 'perturbation_initial': 1, 'perturbation_max': 3, 'stagnation_threshold': 573}. Best is trial 15 with value: 73.0.
+[I 2025-12-04 11:43:31,959] Trial 18 finished with value: 87.0 and parameters: {'cooling_rate': 0.9671615737185305, 'improvement_threshold': 121, 'initial_temp_factor': 0.2989932996120619, 'perturbation_initial': 1, 'perturbation_max': 6, 'stagnation_threshold': 539}. Best is trial 15 with value: 73.0.
+Best trial: 15. Best value: 73: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 20/20 [10:00<00:00, 30.02s/it]
+
+======================================================================
+OTIMIZAÇÃO CONCLUÍDA
+======================================================================
+Tempo total: 600.38s (10.0 min)
+Trials completados: 20
+
+Melhor cycle time: 73.00
+Gap para ótimo: 28.07%
+
+Melhores parâmetros encontrados:
+----------------------------------------------------------------------
+  cooling_rate             : 0.9751067256397791
+  improvement_threshold    : 89
+  initial_temp_factor      : 0.27912777127395205
+  perturbation_initial     : 1
+  perturbation_max         : 6
+  stagnation_threshold     : 526
+
+Melhoria sobre solução inicial: 72.24%
+======================================================================
+
+Parâmetros salvos em: best_params.yml

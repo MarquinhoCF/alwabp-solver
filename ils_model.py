@@ -20,7 +20,6 @@ Opções:
     --perturbation-max M     Perturbação máxima (default: 5)
     --improvement-threshold I Limiar de melhoria (default: 50)
     --stagnation-threshold S  Limiar de estagnação (default: 1000)
-    --optimal-tolerance TOL   Tolerância ótima em % (default: 0.01)
     --seed S                 Seed para reprodutibilidade (default: None)
     --verbose                Modo verboso (default: False)
 
@@ -759,8 +758,9 @@ def iterated_local_search(instance, config):
     perturbation_max = config.get('perturbation_max', 5)
     min_improvement = config.get('improvement_threshold', 50)
     max_stagnation = config.get('stagnation_threshold', 1000)
-    optimal_tolerance = config.get('optimal_tolerance', 0.01)
     verbose = config.get('verbose', False)
+
+    optimal_tolerance = 0.01
     
     # Geração de solução inicial
     if verbose:
@@ -965,9 +965,6 @@ def parse_arguments():
     parser.add_argument('--stagnation-threshold', type=int, default=1000,
                        help='Limiar de estagnação (default: 1000)')
     
-    parser.add_argument('--optimal-tolerance', type=float, default=0.01,
-                       help='Tolerância ótima em % (default: 0.01)')
-    
     parser.add_argument('--verbose', action='store_true',
                        help='Modo verboso - imprime progresso detalhado')
     
@@ -997,7 +994,6 @@ def main():
         'perturbation_max': args.perturbation_max,
         'improvement_threshold': args.improvement_threshold,
         'stagnation_threshold': args.stagnation_threshold,
-        'optimal_tolerance': args.optimal_tolerance,
         'verbose': args.verbose
     }
     

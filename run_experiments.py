@@ -258,7 +258,7 @@ def main():
     selection_file = 'instancias_teste_relatorio.txt'
     output_csv = 'results.csv'
     ils_single_output_csv = 'results_ils_single_results.csv'
-    config_file = 'ils_config.yaml'
+    config_file = 'best_params.yaml'
     
     num_replications = 5
     ils_timeout = 500
