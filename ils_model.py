@@ -928,6 +928,9 @@ def parse_arguments():
         description='ILS para ALWABP com estratégias de poda',
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
+
+    parser.add_argument('output_file', type=str, nargs='?', default=None,
+                       help='Arquivo para gravar a melhor solução (opcional)')
     
     parser.add_argument('--max-iterations', type=int, default=10000,
                        help='Número máximo de iterações (default: 10000)')
@@ -1009,6 +1012,25 @@ def main():
     if not solution or not solution.is_feasible():
         print("Nenhuma solução viável encontrada", file=sys.stderr)
         sys.exit(1)
+
+    if args.output_file:
+        try:
+            with open(args.output_file, 'w') as f:
+                # Redirecionar a saída da solução para o arquivo
+                import io
+                old_stdout = sys.stdout
+                sys.stdout = f
+                
+                solution.print_solution()
+                print(f"\nINITIAL_CYCLE_TIME: {int(round(solution.instance.initial_cycle_time))}")
+                print(f"\nFINAL_CYCLE_TIME: {int(round(solution.cycle_time))}")
+                
+                sys.stdout = old_stdout
+                
+            if args.verbose:
+                print(f"\nSolução gravada em: {args.output_file}", file=sys.stderr)
+        except IOError as e:
+            print(f"Erro ao gravar arquivo: {e}", file=sys.stderr)
     
     if args.verbose:
         print(file=sys.stderr)

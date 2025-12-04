@@ -211,6 +211,9 @@ def parse_arguments():
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
 
+    parser.add_argument('output_file', type=str, nargs='?', default=None,
+                       help='Arquivo para gravar a melhor solução (opcional)')
+
     parser.add_argument('--max-time', type=float, default=300,
                        help='Tempo máximo em segundos (default: 300)')
     
@@ -225,6 +228,24 @@ if __name__ == "__main__":
     cycle_time, worker_assignments, task_assignments, times_matrix = solve_alwabp(n, k, times, incapabilities, precedences, time_limit=args.max_time)
     
     if cycle_time is not None:
+        if args.output_file:
+            try:
+                with open(args.output_file, 'w') as f:
+                    # Redirecionar a saída da solução para o arquivo
+                    import io
+                    old_stdout = sys.stdout
+                    sys.stdout = f
+                    
+                    print_solution(cycle_time, worker_assignments, task_assignments, times_matrix, n, k)
+                    print(f"\nCYCLE_TIME: {int(round(cycle_time))}")
+                    
+                    sys.stdout = old_stdout
+                    
+                if args.verbose:
+                    print(f"\nSolução gravada em: {args.output_file}", file=sys.stderr)
+            except IOError as e:
+                print(f"Erro ao gravar arquivo: {e}", file=sys.stderr)
+
         if args.verbose:
             print_solution(cycle_time, worker_assignments, task_assignments, times_matrix, n, k)
         print(f"\nCYCLE_TIME: {int(round(cycle_time))}")

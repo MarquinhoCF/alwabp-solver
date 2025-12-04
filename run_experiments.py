@@ -1,7 +1,9 @@
 import csv
+import os
 import subprocess
 import sys
 import time
+import yaml
 
 name_abbrev = {
     'heskia': 'hes',
@@ -10,9 +12,34 @@ name_abbrev = {
     'wee-mag': 'wee'
 }
 
+def load_ils_config(config_file='ils_config.yaml'):
+    try:
+        with open(config_file, 'r') as f:
+            if config_file.endswith('.yaml') or config_file.endswith('.yml'):
+                config = yaml.safe_load(f)
+            else:
+                raise ValueError("Formato de arquivo não suportado. Use .yaml ou .yml")
+        
+        print(f"✓ Configuração carregada de {config_file}")
+        return config
+    
+    except Exception as e:
+        print(f"✗ Erro ao carregar configuração: {e}", file=sys.stderr)
+        sys.exit(1)
+
 def get_instance_filename(name, num):
     abbrev = name_abbrev.get(name, name[:3])
     return f"alwabp/{num}_{abbrev}"
+
+def create_solution_directories():
+    base_dir = 'solutions'
+    gurobi_dir = os.path.join(base_dir, 'gurobi')
+    ils_dir = os.path.join(base_dir, 'ils')
+    
+    os.makedirs(gurobi_dir, exist_ok=True)
+    os.makedirs(ils_dir, exist_ok=True)
+    
+    return base_dir, gurobi_dir, ils_dir
 
 def load_selected_instances(selection_file):
     selected = []
@@ -73,10 +100,13 @@ def load_instances_data(csv_file, selected_instances):
     
     return filtered_instances
 
-def run_gurobi(instance_file, timeout=300):
+def run_gurobi(instance_file, instance_name, gurobi_dir, timeout=300):
     try:
+        solution_file = os.path.join(gurobi_dir, f"{instance_name}_gurobi.txt")
+        
         cmd = [
             'python3', 'gurobi_model.py',
+            solution_file,
             '--max-time', str(timeout)
         ]
 
@@ -96,23 +126,33 @@ def run_gurobi(instance_file, timeout=300):
             for line in reversed(output_lines):
                 if line.startswith('CYCLE_TIME:'):
                     cycle_time = int(line.split(':')[1].strip())
-                    return cycle_time, elapsed
-            return None, elapsed
+                    return cycle_time, elapsed, solution_file
+            return None, elapsed, None
         else:
             return None, elapsed
     except subprocess.TimeoutExpired:
-        return None, timeout
+        return None, timeout, None
     except Exception as e:
         print(f"Error running Gurobi on {instance_file}: {e}", file=sys.stderr)
-        return None, 0
+        return None, 0, None
 
-def run_ils_single(instance_file, seed, optimal_value=None, timeout=300):
+def run_ils_single(instance_file, instance_name, ils_dir, seed, ils_config, optimal_value=None, timeout=300):
     try:
+        solution_file = os.path.join(ils_dir, f"{instance_name}_ils_seed{seed}.txt")
+
         cmd = [
             'python3', 'ils_model.py',
+            solution_file,
             '--seed', str(seed),
             '--max-time', str(timeout),
-            '--adaptive-timeout'
+            '--adaptive-timeout',
+            '--initial-temp-factor', str(ils_config['initial_temp_factor']),
+            '--cooling-rate', str(ils_config['cooling_rate']),
+            '--perturbation-initial', str(ils_config['perturbation_initial']),
+            '--perturbation-max', str(ils_config['perturbation_max']),
+            '--improvement-threshold', str(ils_config['improvement_threshold']),
+            '--stagnation-threshold', str(ils_config['stagnation_threshold']),
+            '--optimal-tolerance', str(ils_config['optimal_tolerance'])
         ]
         
         if optimal_value is not None:
@@ -154,7 +194,8 @@ def run_ils_single(instance_file, seed, optimal_value=None, timeout=300):
             'seed': seed,
             'initial_ct': initial_ct,
             'final_ct': final_ct,
-            'time': elapsed
+            'time': elapsed,
+            'solution_file': solution_file
         }
     
     except subprocess.TimeoutExpired:
@@ -163,8 +204,7 @@ def run_ils_single(instance_file, seed, optimal_value=None, timeout=300):
         print(f"Exception running ILS (seed {seed}): {e}", file=sys.stderr)
         return None
 
-def run_ils_replications(instance_file, optimal_value=None, 
-                         num_replications=5, timeout=300):
+def run_ils_replications(instance_file, instance_name, ils_dir, ils_config, optimal_value=None, num_replications=5, timeout=300):
     results = []
     
     for i in range(num_replications):
@@ -172,7 +212,7 @@ def run_ils_replications(instance_file, optimal_value=None,
         
         print(f"  Replicação {i+1}/{num_replications} (seed={seed})...", end=' ', flush=True)
         
-        result = run_ils_single(instance_file, seed, optimal_value, timeout)
+        result = run_ils_single(instance_file, instance_name, ils_dir, seed, ils_config, optimal_value, timeout)
         
         if result:
             results.append(result)
@@ -218,6 +258,7 @@ def main():
     selection_file = 'instancias_teste_relatorio.txt'
     output_csv = 'results.csv'
     ils_single_output_csv = 'results_ils_single_results.csv'
+    config_file = 'ils_config.yaml'
     
     num_replications = 5
     ils_timeout = 500
@@ -230,6 +271,18 @@ def main():
     print(f"Timeout ILS: {ils_timeout}s")
     print(f"Timeout Gurobi: {gurobi_timeout}s")
     print("=" * 80)
+    print()
+
+    # Cria diretórios para salvar soluções
+    base_dir, gurobi_dir, ils_dir = create_solution_directories()
+    print(f"✓ Diretórios criados: {gurobi_dir}, {ils_dir}")
+    print()
+
+    # Carregar configurações do ILS
+    ils_config = load_ils_config(config_file)
+    print("\nParâmetros ILS:")
+    for key, value in ils_config.items():
+        print(f"  {key}: {value}")
     print()
 
     # Carrega instâncias selecionadas
@@ -258,9 +311,10 @@ def main():
         print("-" * 80)
         
         print("Executando Gurobi...", end=' ', flush=True)
-        gurobi_ct, gurobi_time = run_gurobi(instance_file, gurobi_timeout)
+        gurobi_ct, gurobi_time, gurobi_sol_file = run_gurobi(instance_file, instance_name, gurobi_dir, gurobi_timeout)
         if gurobi_ct:
             print(f"✓ CT={gurobi_ct} ({gurobi_time:.2f}s)")
+            print(f"  Solução salva em: {gurobi_sol_file}")
         else:
             print("✗ ERRO ou TIMEOUT")
         
@@ -271,10 +325,8 @@ def main():
         print(f"Executando ILS ({num_replications} replicações):")
         
         ils_results = run_ils_replications(
-            instance_file, 
-            optimal_value, 
-            num_replications, 
-            ils_timeout
+            instance_file, instance_name, ils_dir, ils_config,
+            optimal_value, num_replications, ils_timeout
         )
 
         for r in ils_results:
@@ -285,7 +337,8 @@ def main():
                 'seed': r['seed'],
                 'initial_ct': r['initial_ct'],
                 'final_ct': r['final_ct'],
-                'time': r['time']
+                'time': r['time'],
+                'solution_file': r['solution_file']
             })
 
         ils_stats = calculate_statistics(ils_results)
@@ -333,7 +386,7 @@ def main():
     with open(ils_single_output_csv, 'w', newline='') as f:
         fieldnames = [
             'instance', 'name', 'num', 'seed',
-            'initial_ct', 'final_ct', 'time'
+            'initial_ct', 'final_ct', 'time', 'solution_file'
         ]
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
