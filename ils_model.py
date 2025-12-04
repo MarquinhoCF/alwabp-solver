@@ -14,7 +14,14 @@ Opções:
     --max-time T             Tempo máximo em segundos (default: 300)
     --optimal-value V        Valor ótimo conhecido (para early stopping)
     --adaptive-timeout       Ativa timeout adaptativo (default: False)
-    --seed S          Seed para reprodutibilidade (default: None)
+    --initial-temp-factor F  Fator de temperatura inicial (default: 0.1)
+    --cooling-rate R         Taxa de resfriamento (default: 0.95)
+    --perturbation-initial P Perturbação inicial (default: 2)
+    --perturbation-max M     Perturbação máxima (default: 5)
+    --improvement-threshold I Limiar de melhoria (default: 50)
+    --stagnation-threshold S  Limiar de estagnação (default: 1000)
+    --optimal-tolerance TOL   Tolerância ótima em % (default: 0.01)
+    --seed S                 Seed para reprodutibilidade (default: None)
     --verbose                Modo verboso (default: False)
 
 Exemplo:
@@ -746,14 +753,14 @@ def iterated_local_search(instance, config):
     max_time = config.get('max_time', 300)
     optimal_value = config.get('optimal_value', None)
     adaptive_timeout = config.get('adaptive_timeout', False)
+    initial_temp_factor = config.get('initial_temp_factor', 0.1)
+    cooling_rate = config.get('cooling_rate', 0.95)
+    perturbation_initial = config.get('perturbation_initial', 2)
+    perturbation_max = config.get('perturbation_max', 5)
+    min_improvement = config.get('improvement_threshold', 50)
+    max_stagnation = config.get('stagnation_threshold', 1000)
+    optimal_tolerance = config.get('optimal_tolerance', 0.01)
     verbose = config.get('verbose', False)
-
-    # Parâmetros do algoritmo
-    optimal_tolerance = 0.01
-    min_improvement = 50
-    max_stagnation = 1000
-    cooling_rate = 0.95
-    initial_temp_factor = 0.1
     
     # Geração de solução inicial
     if verbose:
@@ -781,7 +788,7 @@ def iterated_local_search(instance, config):
     
     # Parâmetros do ILS
     temperature = best.cycle_time * initial_temp_factor
-    perturbation_strength = 2
+    perturbation_strength = perturbation_initial
     iterations_without_improvement = 0
     iterations_without_any_change = 0
     restart_count = 0
@@ -842,7 +849,7 @@ def iterated_local_search(instance, config):
                 
                 iterations_without_improvement = 0
                 iterations_without_any_change = 0
-                perturbation_strength = 2
+                perturbation_strength = perturbation_initial  # Resetar força de perturbação
                 
                 # Early stopping
                 if optimal_value and abs(best.cycle_time - optimal_value) <= optimal_tolerance:
@@ -857,7 +864,7 @@ def iterated_local_search(instance, config):
         
         # Adaptação de perturbação baseada em estagnação
         if iterations_without_improvement > min_improvement:
-            perturbation_strength = min(5, perturbation_strength + 1)
+            perturbation_strength = min(perturbation_max, perturbation_strength + 1)
             iterations_without_improvement = 0
             if verbose:
                 print(f"Iter {iteration}: Aumentando perturbação para {perturbation_strength}", 
@@ -874,7 +881,7 @@ def iterated_local_search(instance, config):
             
             # Resetar parâmetros
             temperature = best.cycle_time * initial_temp_factor
-            perturbation_strength = 3  # Um pouco mais forte após restart
+            perturbation_strength = perturbation_initial + 1  # Um pouco mais forte após restart
             iterations_without_any_change = 0
             iterations_without_improvement = 0
             restart_count += 1
@@ -937,6 +944,27 @@ def parse_arguments():
     parser.add_argument('--seed', type=int, default=None,
                        help='Seed para reprodutibilidade (default: None - aleatório)')
     
+    parser.add_argument('--initial-temp-factor', type=float, default=0.1,
+                       help='Fator de temperatura inicial (default: 0.1)')
+    
+    parser.add_argument('--cooling-rate', type=float, default=0.95,
+                       help='Taxa de resfriamento (default: 0.95)')
+    
+    parser.add_argument('--perturbation-initial', type=int, default=2,
+                          help='Perturbação inicial (default: 2)')
+    
+    parser.add_argument('--perturbation-max', type=int, default=5,
+                       help='Perturbação máxima (default: 5)')
+    
+    parser.add_argument('--improvement-threshold', type=int, default=50,
+                          help='Limiar de melhoria (default: 50)')
+    
+    parser.add_argument('--stagnation-threshold', type=int, default=1000,
+                       help='Limiar de estagnação (default: 1000)')
+    
+    parser.add_argument('--optimal-tolerance', type=float, default=0.01,
+                       help='Tolerância ótima em % (default: 0.01)')
+    
     parser.add_argument('--verbose', action='store_true',
                        help='Modo verboso - imprime progresso detalhado')
     
@@ -960,6 +988,13 @@ def main():
         'max_time': args.max_time,
         'optimal_value': args.optimal_value,
         'adaptive_timeout': args.adaptive_timeout,
+        'initial_temp_factor': args.initial_temp_factor,
+        'cooling_rate': args.cooling_rate,
+        'perturbation_initial': args.perturbation_initial,
+        'perturbation_max': args.perturbation_max,
+        'improvement_threshold': args.improvement_threshold,
+        'stagnation_threshold': args.stagnation_threshold,
+        'optimal_tolerance': args.optimal_tolerance,
         'verbose': args.verbose
     }
     
