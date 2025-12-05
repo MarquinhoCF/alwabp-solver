@@ -261,8 +261,8 @@ def main():
     config_file = 'best_params.yaml'
     
     num_replications = 5
-    ils_timeout = 500
-    gurobi_timeout = 300
+    ils_timeout = 700
+    gurobi_timeout = 700
     
     print("=" * 80)
     print("EXPERIMENTOS ALWABP - Gurobi e ILS")
