@@ -1,3 +1,4 @@
+import argparse
 import csv
 import os
 import subprocess
@@ -262,23 +263,79 @@ def calculate_statistics(results):
         'num_replications': len(results)
     }
 
-def main():
-    input_csv = 'instances.csv'
-    selection_file = 'instancias_teste_relatorio.txt'
-    output_csv = 'results.csv'
-    ils_single_output_csv = 'results_ils_single_results.csv'
-    config_file = 'best_params.yaml'
+def parse_arguments():
+    parser = argparse.ArgumentParser(
+        description='Executa experimentos ALWABP com Gurobi e ILS',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
     
-    num_replications = 5
-    ils_timeout = 700
-    gurobi_timeout = 700
+    parser.add_argument(
+        '--input-csv',
+        default='instances.csv',
+        help='Arquivo CSV com informações das instâncias'
+    )
+    
+    parser.add_argument(
+        '--selection-file',
+        default='instancias_teste_relatorio.txt',
+        help='Arquivo com lista de instâncias selecionadas'
+    )
+    
+    parser.add_argument(
+        '--output-csv',
+        default='results.csv',
+        help='Arquivo CSV de saída com resultados agregados'
+    )
+    
+    parser.add_argument(
+        '--ils-output-csv',
+        default='results_ils_single_results.csv',
+        help='Arquivo CSV com resultados individuais do ILS'
+    )
+    
+    parser.add_argument(
+        '--config-file',
+        default='best_params.yaml',
+        help='Arquivo YAML com parâmetros do ILS'
+    )
+    
+    parser.add_argument(
+        '--replications',
+        type=int,
+        default=5,
+        help='Número de replicações do ILS por instância'
+    )
+    
+    parser.add_argument(
+        '--ils-timeout',
+        type=int,
+        default=700,
+        help='Timeout em segundos para execução do ILS'
+    )
+    
+    parser.add_argument(
+        '--gurobi-timeout',
+        type=int,
+        default=700,
+        help='Timeout em segundos para execução do Gurobi'
+    )
+    
+    return parser.parse_args()
+
+def main():
+    args = parse_arguments()
     
     print("=" * 80)
     print("EXPERIMENTOS ALWABP - Gurobi e ILS")
     print("=" * 80)
-    print(f"Replicações por instância: {num_replications}")
-    print(f"Timeout ILS: {ils_timeout}s")
-    print(f"Timeout Gurobi: {gurobi_timeout}s")
+    print(f"Arquivo de instâncias: {args.input_csv}")
+    print(f"Arquivo de seleção: {args.selection_file}")
+    print(f"Arquivo de configuração: {args.config_file}")
+    print(f"Replicações por instância: {args.replications}")
+    print(f"Timeout ILS: {args.ils_timeout}s")
+    print(f"Timeout Gurobi: {args.gurobi_timeout}s")
+    print(f"Saída agregada: {args.output_csv}")
+    print(f"Saída individual: {args.ils_output_csv}")
     print("=" * 80)
     print()
 
@@ -288,17 +345,17 @@ def main():
     print()
 
     # Carregar configurações do ILS
-    ils_config = load_ils_config(config_file)
+    ils_config = load_ils_config(args.config_file)
     print("\nParâmetros ILS:")
     for key, value in ils_config.items():
         print(f"  {key}: {value}")
     print()
 
     # Carrega instâncias selecionadas
-    selected_instances = load_selected_instances(selection_file)
+    selected_instances = load_selected_instances(args.selection_file)
     
     # Carrega dados do CSV apenas para instâncias selecionadas
-    instances = load_instances_data(input_csv, selected_instances)
+    instances = load_instances_data(args.input_csv, selected_instances)
     
     if not instances:
         print("✗ Nenhuma instância válida encontrada!")
@@ -320,7 +377,9 @@ def main():
         print("-" * 80)
         
         print("Executando Gurobi...", end=' ', flush=True)
-        gurobi_ct, gurobi_time, gurobi_sol_file = run_gurobi(instance_file, instance_name, gurobi_dir, gurobi_timeout)
+        gurobi_ct, gurobi_time, gurobi_sol_file = run_gurobi(
+            instance_file, instance_name, gurobi_dir, args.gurobi_timeout
+        )
         if gurobi_ct:
             print(f"✓ CT={gurobi_ct} ({gurobi_time:.2f}s)")
             print(f"  Solução salva em: {gurobi_sol_file}")
@@ -328,14 +387,13 @@ def main():
             print("✗ ERRO ou TIMEOUT")
         
         # Usa valor ótimo conhecido para realizar early stopping no ILS
-        # Usar UB como optimal value se Gurobi não encontrou
         optimal_value = gurobi_ct if gurobi_ct else ub
 
-        print(f"Executando ILS ({num_replications} replicações):")
+        print(f"Executando ILS ({args.replications} replicações):")
         
         ils_results = run_ils_replications(
             instance_file, instance_name, ils_dir, ils_config,
-            optimal_value, num_replications, ils_timeout
+            optimal_value, args.replications, args.ils_timeout
         )
 
         for r in ils_results:
@@ -380,7 +438,7 @@ def main():
             print(f"  ILS (melhor): {ils_stats['best_final_ct']}")
             print(f"  Melhoria SI -> SF: {ils_stats['improvement_pct']:.2f}%")
     
-    with open(output_csv, 'w', newline='') as f:
+    with open(args.output_csv, 'w', newline='') as f:
         fieldnames = [
             'instance', 'name', 'num', 'n_tasks', 'n_workers', 'UB',
             'gurobi_ct', 'gurobi_time',
@@ -392,7 +450,7 @@ def main():
         writer.writeheader()
         writer.writerows(rows)
     
-    with open(ils_single_output_csv, 'w', newline='') as f:
+    with open(args.ils_output_csv, 'w', newline='') as f:
         fieldnames = [
             'instance', 'name', 'num', 'seed',
             'initial_ct', 'final_ct', 'time', 'solution_file'
@@ -402,7 +460,9 @@ def main():
         writer.writerows(individual_rows)
     
     print("\n" + "=" * 80)
-    print(f"✓ Experimentos concluídos! Resultados salvos em {output_csv} e {ils_single_output_csv}")
+    print(f"✓ Experimentos concluídos!")
+    print(f"  Resultados agregados: {args.output_csv}")
+    print(f"  Resultados individuais: {args.ils_output_csv}")
     print("=" * 80)
 
 if __name__ == "__main__":
