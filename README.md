@@ -7,7 +7,7 @@ O trabalho foi desenvolvido como parte das atividades das disciplinas **GCC118 �
 Grupo responsável pelo desenvolvimento:
 - Marcos Carvalho Ferreira
 - Luiz Otávio Andrade Soares
-- Douglas Giovani de Paiva Mosca Leite.
+- Douglas Geovani de Paiva Mosca Leite
 
 Para informações detalhadas sobre a metodologia, fundamentação teórica e contextualização do problema, encontra-se disponível o relatório técnico em `Relatório_Programação_Matemática/Relatório_Programação_Matemática.pdf`.
 
@@ -20,7 +20,7 @@ Para informações detalhadas sobre a metodologia, fundamentação teórica e co
 ├── requirements.txt                  # Arquivo com as dependências do projeto
 ├── gurobi_model.py                   # Modelo exato usando Gurobi
 ├── ils_model.py                      # Implementação do ILS
-├── optimize_params.py                # Otimização de hiperparâmetros (Optuna)
+├── optimize_params.py                # Otimização de parâmetros (Optuna)
 ├── run_experiments.py                # Execução em lote de experimentos
 ├── instances.csv                     # Metadados das instâncias
 ├── instancias_teste_relatorio.txt    # Instâncias selecionadas para o relatório
@@ -32,10 +32,10 @@ Para informações detalhadas sobre a metodologia, fundamentação teórica e co
 │   └── ils/                          # Soluções do ILS
 ├── documets/                         # Diretório com o enunciado do trabalho e outros documentos
 │   └── ...                          
-├── Relatório_Programação_Matemática/ # Diretório do relatório em latex                   
+├── Relatório_Programação_Matemática/ # Diretório do relatório                   
 │   └── ... 
-├── results.csv                      # Resultados agregados
-└── results_ils_single_results.csv   # Resultados individuais de cada replicação do ILS
+├── results.csv                       # Resultados agregados
+└── results_ils_single_results.csv    # Resultados individuais de cada replicação do ILS
 ```
 
 ## Requisitos
@@ -208,26 +208,40 @@ python3 optimize_params.py \
 ### 4. Executar Experimentos
 
 ```bash
+# Execução básica
 python3 run_experiments.py
+
+python3 run_experiments.py \
+   --replications 5 \
+   --gurobi-timeout 700 \
+   --ils-timeout 700 \
+   --config-file best_params.yaml \
+   --input-csv instances.csv \
+   --selection-file instancias_teste_relatorio.txt \
+   --output-csv results.csv \
+   --ils-output-csv results_ils_single_results.csv
 ```
 
-Este script executa automaticamente:
-1. Carrega instâncias de `instancias_teste_relatorio.txt`
-2. Executa Gurobi em cada instância (timeout: 700s)
-3. Executa ILS com 5 replicações diferentes (timeout: 700s)
-4. Salva todas as soluções em `solutions/`
-5. Gera relatórios CSV:
-   - `results.csv`: Resultados agregados
-   - `results_ils_single_results.csv`: Resultados individuais de cada replicação
+**Parâmetros:**
+- `--input-csv`: Arquivo CSV com informações das instâncias (default: "instances.csv")
+- `--selection-file`: Arquivo com lista de instâncias selecionadas (default: "instancias_teste_relatorio.txt")
+- `--output-csv`: Arquivo CSV de saída com resultados agregados (default: "results.csv")
+- `--ils-output-csv`: Arquivo CSV com resultados individuais do ILS (default: "results_ils_single_results.csv")
+- `--config-file`: Arquivo YAML com parâmetros do ILS (default: "best_params.yaml")
+- `--replications`: Número de replicações do ILS por instância (default: 5)
+- `--ils-timeout`: Timeout em segundos para execução do ILS (default: 700)
+- `--gurobi-timeout`: Timeout em segundos para execução do Gurobi (default: 700)
 
-**Configuração do batch:**
-Editar variáveis no início de `run_experiments.py`:
-```python
-num_replications = 5        # Número de execuções do ILS por instância
-ils_timeout = 700          # Timeout do ILS
-gurobi_timeout = 700       # Timeout do Gurobi
-config_file = 'best_params.yaml'  # Arquivo de parâmetros
-```
+**Saída:**
+- `results.csv` (ou nome especificado em `--output-csv`):
+   - Resultados agregados por instância
+   - Contém médias, melhor e pior solução do ILS
+   - Comparação com Gurobi
+- `results_ils_single_results.csv` (ou nome especificado em `--ils-output-csv`):
+   - Resultados individuais de cada replicação do ILS
+   - Uma linha por execução (instância + seed)
+- `solutions/gurobi/`: Soluções encontradas pelo Gurobi
+- `solutions/ils/`: Soluções encontradas por cada replicação do ILS
 
 ## Formato dos Arquivos
 
