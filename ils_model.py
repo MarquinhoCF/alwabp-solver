@@ -760,7 +760,7 @@ def iterated_local_search(instance, config):
     max_stagnation = config.get('stagnation_threshold', 1000)
     verbose = config.get('verbose', False)
 
-    optimal_tolerance = 0.01
+    optimal_tolerance = config.get('optimal_tolerance', 0.01)
     
     # Geração de solução inicial
     if verbose:
@@ -940,6 +940,9 @@ def parse_arguments():
     
     parser.add_argument('--optimal-value', type=float, default=None,
                        help='Valor ótimo conhecido para early stopping')
+
+    parser.add_argument('--optimal-tolerance', type=float, default=0.01,
+                       help='Tolerância para considerar que o ótimo foi atingido (default: 0.01)')
     
     parser.add_argument('--adaptive-timeout', action='store_false', default=False,
                        help='Ativa timeout adaptativo (default: False)')
@@ -987,6 +990,7 @@ def main():
         'max_iterations': args.max_iterations,
         'max_time': args.max_time,
         'optimal_value': args.optimal_value,
+        'optimal_tolerance': args.optimal_tolerance,
         'adaptive_timeout': args.adaptive_timeout,
         'initial_temp_factor': args.initial_temp_factor,
         'cooling_rate': args.cooling_rate,

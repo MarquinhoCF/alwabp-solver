@@ -1,0 +1,565 @@
+================================================================================
+EXPERIMENTOS ALWABP - Gurobi e ILS
+================================================================================
+Replicações por instância: 5
+Timeout ILS: 700s
+Timeout Gurobi: 700s
+================================================================================
+
+✓ Diretórios criados: solutions/gurobi, solutions/ils
+
+Aviso: parâmetro 'optimal_tolerance' ausente em best_params.yaml. Usando padrão 0.01
+✓ Configuração carregada de best_params.yaml
+
+Parâmetros ILS:
+  cooling_rate: 0.9265194944101449
+  improvement_threshold: 133
+  initial_temp_factor: 0.05428948243769356
+  perturbation_initial: 1
+  perturbation_max: 5
+  stagnation_threshold: 938
+  optimal_tolerance: 0.01
+
+✓ 48 instâncias selecionadas de instancias_teste_relatorio.txt
+
+[1/48] Instância: 1_hes
+--------------------------------------------------------------------------------
+Executando Gurobi... ✓ CT=94 (0.14s)
+  Solução salva em: solutions/gurobi/1_hes_gurobi.txt
+Executando ILS (5 replicações):
+  Replicação 1/5 (seed=10)... ✓ CT=94 (0.1s)
+  Replicação 2/5 (seed=11)... ✓ CT=94 (14.4s)
+  Replicação 3/5 (seed=12)... ✓ CT=94 (6.9s)
+  Replicação 4/5 (seed=13)... ✓ CT=94 (5.0s)
+  Replicação 5/5 (seed=14)... ✓ CT=94 (0.1s)
+
+Resumo:
+  Gurobi: 94 (0.14s)
+  ILS (média): 94.00 (5.28s)
+  ILS (melhor): 94
+  Melhoria SI -> SF: 53.92%
+
+[2/48] Instância: 2_hes
+--------------------------------------------------------------------------------
+Executando Gurobi... ✓ CT=95 (0.16s)
+  Solução salva em: solutions/gurobi/2_hes_gurobi.txt
+Executando ILS (5 replicações):
+  Replicação 1/5 (seed=10)... ✓ CT=95 (1.1s)
+  Replicação 2/5 (seed=11)... ✓ CT=95 (1.1s)
+  Replicação 3/5 (seed=12)... ✓ CT=95 (3.1s)
+  Replicação 4/5 (seed=13)... ✓ CT=95 (24.1s)
+  Replicação 5/5 (seed=14)... ✓ CT=95 (0.5s)
+
+Resumo:
+  Gurobi: 95 (0.16s)
+  ILS (média): 95.00 (5.97s)
+  ILS (melhor): 95
+  Melhoria SI -> SF: 23.26%
+
+[3/48] Instância: 11_hes
+--------------------------------------------------------------------------------
+Executando Gurobi... ✓ CT=169 (0.14s)
+  Solução salva em: solutions/gurobi/11_hes_gurobi.txt
+Executando ILS (5 replicações):
+  Replicação 1/5 (seed=10)... ✓ CT=172 (22.1s)
+  Replicação 2/5 (seed=11)... ✓ CT=172 (22.0s)
+  Replicação 3/5 (seed=12)... ✓ CT=172 (20.5s)
+  Replicação 4/5 (seed=13)... ✓ CT=172 (21.2s)
+  Replicação 5/5 (seed=14)... ✓ CT=172 (21.6s)
+
+Resumo:
+  Gurobi: 169 (0.14s)
+  ILS (média): 172.00 (21.50s)
+  ILS (melhor): 172
+  Melhoria SI -> SF: 66.02%
+
+[4/48] Instância: 12_hes
+--------------------------------------------------------------------------------
+Executando Gurobi... ✓ CT=107 (0.11s)
+  Solução salva em: solutions/gurobi/12_hes_gurobi.txt
+Executando ILS (5 replicações):
+  Replicação 1/5 (seed=10)... ✓ CT=107 (1.1s)
+  Replicação 2/5 (seed=11)... ✓ CT=107 (9.5s)
+  Replicação 3/5 (seed=12)... ✓ CT=113 (23.6s)
+  Replicação 4/5 (seed=13)... ✓ CT=107 (18.9s)
+  Replicação 5/5 (seed=14)... ✓ CT=107 (0.6s)
+
+Resumo:
+  Gurobi: 107 (0.11s)
+  ILS (média): 108.20 (10.74s)
+  ILS (melhor): 107
+  Melhoria SI -> SF: 44.11%
+
+[5/48] Instância: 41_hes
+--------------------------------------------------------------------------------
+Executando Gurobi... ✓ CT=35 (0.74s)
+  Solução salva em: solutions/gurobi/41_hes_gurobi.txt
+Executando ILS (5 replicações):
+  Replicação 1/5 (seed=10)... ✓ CT=35 (5.1s)
+  Replicação 2/5 (seed=11)... ✓ CT=35 (16.8s)
+  Replicação 3/5 (seed=12)... ✓ CT=35 (27.3s)
+  Replicação 4/5 (seed=13)... ✓ CT=35 (3.0s)
+  Replicação 5/5 (seed=14)... ✓ CT=35 (15.8s)
+
+Resumo:
+  Gurobi: 35 (0.74s)
+  ILS (média): 35.00 (13.60s)
+  ILS (melhor): 35
+  Melhoria SI -> SF: 42.62%
+
+[6/48] Instância: 42_hes
+--------------------------------------------------------------------------------
+Executando Gurobi... ✓ CT=40 (1.37s)
+  Solução salva em: solutions/gurobi/42_hes_gurobi.txt
+Executando ILS (5 replicações):
+  Replicação 1/5 (seed=10)... ✓ CT=40 (7.8s)
+  Replicação 2/5 (seed=11)... ✓ CT=40 (6.5s)
+  Replicação 3/5 (seed=12)... ✓ CT=40 (8.8s)
+  Replicação 4/5 (seed=13)... ✓ CT=40 (21.8s)
+  Replicação 5/5 (seed=14)... ✓ CT=40 (4.0s)
+
+Resumo:
+  Gurobi: 40 (1.37s)
+  ILS (média): 40.00 (9.80s)
+  ILS (melhor): 40
+  Melhoria SI -> SF: 69.92%
+
+[7/48] Instância: 51_hes
+--------------------------------------------------------------------------------
+Executando Gurobi... ✓ CT=51 (1.44s)
+  Solução salva em: solutions/gurobi/51_hes_gurobi.txt
+Executando ILS (5 replicações):
+  Replicação 1/5 (seed=10)... ✓ CT=51 (4.5s)
+  Replicação 2/5 (seed=11)... ✓ CT=51 (24.6s)
+  Replicação 3/5 (seed=12)... ✓ CT=51 (8.4s)
+  Replicação 4/5 (seed=13)... ✓ CT=51 (1.9s)
+  Replicação 5/5 (seed=14)... ✓ CT=51 (9.0s)
+
+Resumo:
+  Gurobi: 51 (1.44s)
+  ILS (média): 51.00 (9.70s)
+  ILS (melhor): 51
+  Melhoria SI -> SF: 69.64%
+
+[8/48] Instância: 52_hes
+--------------------------------------------------------------------------------
+Executando Gurobi... ✓ CT=50 (1.11s)
+  Solução salva em: solutions/gurobi/52_hes_gurobi.txt
+Executando ILS (5 replicações):
+  Replicação 1/5 (seed=10)... ✓ CT=51 (40.3s)
+  Replicação 2/5 (seed=11)... ✓ CT=54 (666.8s)
+  Replicação 3/5 (seed=12)... ✓ CT=51 (85.5s)
+  Replicação 4/5 (seed=13)... ✓ CT=51 (36.9s)
+  Replicação 5/5 (seed=14)... ✓ CT=50 (0.1s)
+
+Resumo:
+  Gurobi: 50 (1.11s)
+  ILS (média): 51.40 (165.92s)
+  ILS (melhor): 50
+  Melhoria SI -> SF: 56.51%
+
+[9/48] Instância: 61_hes
+--------------------------------------------------------------------------------
+Executando Gurobi... ✓ CT=66 (1.15s)
+  Solução salva em: solutions/gurobi/61_hes_gurobi.txt
+Executando ILS (5 replicações):
+  Replicação 1/5 (seed=10)... ✓ CT=66 (11.6s)
+  Replicação 2/5 (seed=11)... ✓ CT=66 (2.2s)
+  Replicação 3/5 (seed=12)... ✓ CT=66 (0.3s)
+  Replicação 4/5 (seed=13)... ✓ CT=66 (21.4s)
+  Replicação 5/5 (seed=14)... ✓ CT=66 (0.8s)
+
+Resumo:
+  Gurobi: 66 (1.15s)
+  ILS (média): 66.00 (7.24s)
+  ILS (melhor): 66
+  Melhoria SI -> SF: 60.76%
+
+[10/48] Instância: 62_hes
+--------------------------------------------------------------------------------
+Executando Gurobi... ✓ CT=56 (0.90s)
+  Solução salva em: solutions/gurobi/62_hes_gurobi.txt
+Executando ILS (5 replicações):
+  Replicação 1/5 (seed=10)... ✓ CT=56 (1.5s)
+  Replicação 2/5 (seed=11)... ✓ CT=56 (9.6s)
+  Replicação 3/5 (seed=12)... ✓ CT=56 (28.2s)
+  Replicação 4/5 (seed=13)... ✓ CT=56 (17.8s)
+  Replicação 5/5 (seed=14)... ✓ CT=56 (1.5s)
+
+Resumo:
+  Gurobi: 56 (0.90s)
+  ILS (média): 56.00 (11.71s)
+  ILS (melhor): 56
+  Melhoria SI -> SF: 66.31%
+
+[11/48] Instância: 71_hes
+--------------------------------------------------------------------------------
+Executando Gurobi... ✓ CT=91 (0.41s)
+  Solução salva em: solutions/gurobi/71_hes_gurobi.txt
+Executando ILS (5 replicações):
+  Replicação 1/5 (seed=10)... ✓ CT=91 (0.2s)
+  Replicação 2/5 (seed=11)... ✓ CT=91 (0.1s)
+  Replicação 3/5 (seed=12)... ✓ CT=91 (0.1s)
+  Replicação 4/5 (seed=13)... ✓ CT=91 (0.3s)
+  Replicação 5/5 (seed=14)... ✓ CT=91 (0.2s)
+
+Resumo:
+  Gurobi: 91 (0.41s)
+  ILS (média): 91.00 (0.18s)
+  ILS (melhor): 91
+  Melhoria SI -> SF: 32.09%
+
+[12/48] Instância: 72_hes
+--------------------------------------------------------------------------------
+Executando Gurobi... ✓ CT=65 (1.21s)
+  Solução salva em: solutions/gurobi/72_hes_gurobi.txt
+Executando ILS (5 replicações):
+  Replicação 1/5 (seed=10)... ✓ CT=72 (51.6s)
+  Replicação 2/5 (seed=11)... ✓ CT=77 (55.8s)
+  Replicação 3/5 (seed=12)... ✓ CT=65 (28.2s)
+  Replicação 4/5 (seed=13)... ✓ CT=65 (28.5s)
+  Replicação 5/5 (seed=14)... ✓ CT=69 (53.9s)
+
+Resumo:
+  Gurobi: 65 (1.21s)
+  ILS (média): 69.60 (43.63s)
+  ILS (melhor): 65
+  Melhoria SI -> SF: 52.78%
+
+[13/48] Instância: 1_ros
+--------------------------------------------------------------------------------
+Executando Gurobi... ✓ CT=20 (0.11s)
+  Solução salva em: solutions/gurobi/1_ros_gurobi.txt
+Executando ILS (5 replicações):
+  Replicação 1/5 (seed=10)... ✓ CT=20 (0.0s)
+  Replicação 2/5 (seed=11)... ✓ CT=21 (5.6s)
+  Replicação 3/5 (seed=12)... ✓ CT=20 (3.1s)
+  Replicação 4/5 (seed=13)... ✓ CT=21 (5.6s)
+  Replicação 5/5 (seed=14)... ✓ CT=20 (0.0s)
+
+Resumo:
+  Gurobi: 20 (0.11s)
+  ILS (média): 20.40 (2.87s)
+  ILS (melhor): 20
+  Melhoria SI -> SF: 75.42%
+
+[14/48] Instância: 2_ros
+--------------------------------------------------------------------------------
+Executando Gurobi... ✓ CT=22 (0.08s)
+  Solução salva em: solutions/gurobi/2_ros_gurobi.txt
+Executando ILS (5 replicações):
+  Replicação 1/5 (seed=10)... ✓ CT=23 (8.3s)
+  Replicação 2/5 (seed=11)... ✓ CT=23 (7.7s)
+  Replicação 3/5 (seed=12)... ✓ CT=23 (7.8s)
+  Replicação 4/5 (seed=13)... ✓ CT=23 (8.2s)
+  Replicação 5/5 (seed=14)... ✓ CT=22 (6.9s)
+
+Resumo:
+  Gurobi: 22 (0.08s)
+  ILS (média): 22.80 (7.78s)
+  ILS (melhor): 22
+  Melhoria SI -> SF: 65.45%
+
+[15/48] Instância: 11_ros
+--------------------------------------------------------------------------------
+Executando Gurobi... ✓ CT=30 (0.07s)
+  Solução salva em: solutions/gurobi/11_ros_gurobi.txt
+Executando ILS (5 replicações):
+  Replicação 1/5 (seed=10)... ✓ CT=26 (4.0s)
+  Replicação 2/5 (seed=11)... ✓ CT=26 (4.8s)
+  Replicação 3/5 (seed=12)... ✓ CT=30 (4.0s)
+  Replicação 4/5 (seed=13)... ✓ CT=26 (5.3s)
+  Replicação 5/5 (seed=14)... ✓ CT=30 (1.5s)
+
+Resumo:
+  Gurobi: 30 (0.07s)
+  ILS (média): 27.60 (3.90s)
+  ILS (melhor): 26
+  Melhoria SI -> SF: 65.50%
+
+[16/48] Instância: 12_ros
+--------------------------------------------------------------------------------
+Executando Gurobi... ✓ CT=27 (0.08s)
+  Solução salva em: solutions/gurobi/12_ros_gurobi.txt
+Executando ILS (5 replicações):
+  Replicação 1/5 (seed=10)... ✓ CT=27 (0.3s)
+  Replicação 2/5 (seed=11)... ✓ CT=25 (5.2s)
+  Replicação 3/5 (seed=12)... ✓ CT=25 (4.4s)
+  Replicação 4/5 (seed=13)... ✓ CT=25 (4.6s)
+  Replicação 5/5 (seed=14)... ✓ CT=25 (4.8s)
+
+Resumo:
+  Gurobi: 27 (0.08s)
+  ILS (média): 25.40 (3.87s)
+  ILS (melhor): 25
+  Melhoria SI -> SF: 62.20%
+
+[17/48] Instância: 41_ros
+--------------------------------------------------------------------------------
+Executando Gurobi... ✓ CT=10 (0.58s)
+  Solução salva em: solutions/gurobi/41_ros_gurobi.txt
+Executando ILS (5 replicações):
+  Replicação 1/5 (seed=10)... ✓ CT=10 (1.7s)
+  Replicação 2/5 (seed=11)... ✓ CT=10 (2.3s)
+  Replicação 3/5 (seed=12)... ✓ CT=10 (0.1s)
+  Replicação 4/5 (seed=13)... ✓ CT=10 (4.2s)
+  Replicação 5/5 (seed=14)... ✓ CT=10 (0.0s)
+
+Resumo:
+  Gurobi: 10 (0.58s)
+  ILS (média): 10.00 (1.65s)
+  ILS (melhor): 10
+  Melhoria SI -> SF: 57.63%
+
+[18/48] Instância: 42_ros
+--------------------------------------------------------------------------------
+Executando Gurobi... ✓ CT=10 (0.74s)
+  Solução salva em: solutions/gurobi/42_ros_gurobi.txt
+Executando ILS (5 replicações):
+  Replicação 1/5 (seed=10)... ✓ CT=10 (1.0s)
+  Replicação 2/5 (seed=11)... ✓ CT=10 (1.3s)
+  Replicação 3/5 (seed=12)... ✓ CT=10 (4.7s)
+  Replicação 4/5 (seed=13)... ✓ CT=10 (1.5s)
+  Replicação 5/5 (seed=14)... ✓ CT=10 (0.1s)
+
+Resumo:
+  Gurobi: 10 (0.74s)
+  ILS (média): 10.00 (1.71s)
+  ILS (melhor): 10
+  Melhoria SI -> SF: 60.94%
+
+[19/48] Instância: 51_ros
+--------------------------------------------------------------------------------
+Executando Gurobi... ✓ CT=11 (0.40s)
+  Solução salva em: solutions/gurobi/51_ros_gurobi.txt
+Executando ILS (5 replicações):
+  Replicação 1/5 (seed=10)... ✓ CT=11 (0.9s)
+  Replicação 2/5 (seed=11)... ✓ CT=11 (2.5s)
+  Replicação 3/5 (seed=12)... ✓ CT=11 (2.0s)
+  Replicação 4/5 (seed=13)... ✓ CT=11 (1.5s)
+  Replicação 5/5 (seed=14)... ✓ CT=11 (0.2s)
+
+Resumo:
+  Gurobi: 11 (0.40s)
+  ILS (média): 11.00 (1.43s)
+  ILS (melhor): 11
+  Melhoria SI -> SF: 82.65%
+
+[20/48] Instância: 52_ros
+--------------------------------------------------------------------------------
+Executando Gurobi... ✓ CT=10 (0.49s)
+  Solução salva em: solutions/gurobi/52_ros_gurobi.txt
+Executando ILS (5 replicações):
+  Replicação 1/5 (seed=10)... ✓ CT=10 (2.0s)
+  Replicação 2/5 (seed=11)... ✓ CT=10 (5.2s)
+  Replicação 3/5 (seed=12)... ✓ CT=10 (6.5s)
+  Replicação 4/5 (seed=13)... ✓ CT=10 (0.2s)
+  Replicação 5/5 (seed=14)... ✓ CT=10 (0.1s)
+
+Resumo:
+  Gurobi: 10 (0.49s)
+  ILS (média): 10.00 (2.81s)
+  ILS (melhor): 10
+  Melhoria SI -> SF: 79.76%
+
+[21/48] Instância: 61_ros
+--------------------------------------------------------------------------------
+Executando Gurobi... ✓ CT=16 (0.53s)
+  Solução salva em: solutions/gurobi/61_ros_gurobi.txt
+Executando ILS (5 replicações):
+  Replicação 1/5 (seed=10)... ✓ CT=16 (1.8s)
+  Replicação 2/5 (seed=11)... ✓ CT=16 (2.6s)
+  Replicação 3/5 (seed=12)... ✓ CT=16 (5.9s)
+  Replicação 4/5 (seed=13)... ✓ CT=16 (0.4s)
+  Replicação 5/5 (seed=14)... ✓ CT=16 (0.7s)
+
+Resumo:
+  Gurobi: 16 (0.53s)
+  ILS (média): 16.00 (2.25s)
+  ILS (melhor): 16
+  Melhoria SI -> SF: 55.80%
+
+[22/48] Instância: 62_ros
+--------------------------------------------------------------------------------
+Executando Gurobi... ✓ CT=13 (0.44s)
+  Solução salva em: solutions/gurobi/62_ros_gurobi.txt
+Executando ILS (5 replicações):
+  Replicação 1/5 (seed=10)... ✓ CT=13 (0.1s)
+  Replicação 2/5 (seed=11)... ✓ CT=13 (0.2s)
+  Replicação 3/5 (seed=12)... ✓ CT=13 (0.2s)
+  Replicação 4/5 (seed=13)... ✓ CT=13 (2.4s)
+  Replicação 5/5 (seed=14)... ✓ CT=13 (1.2s)
+
+Resumo:
+  Gurobi: 13 (0.44s)
+  ILS (média): 13.00 (0.83s)
+  ILS (melhor): 13
+  Melhoria SI -> SF: 52.21%
+
+[23/48] Instância: 71_ros
+--------------------------------------------------------------------------------
+Executando Gurobi... ✓ CT=15 (0.74s)
+  Solução salva em: solutions/gurobi/71_ros_gurobi.txt
+Executando ILS (5 replicações):
+  Replicação 1/5 (seed=10)... ✓ CT=15 (4.7s)
+  Replicação 2/5 (seed=11)... ✓ CT=15 (0.1s)
+  Replicação 3/5 (seed=12)... ✓ CT=15 (0.1s)
+  Replicação 4/5 (seed=13)... ✓ CT=15 (3.6s)
+  Replicação 5/5 (seed=14)... ✓ CT=15 (0.6s)
+
+Resumo:
+  Gurobi: 15 (0.74s)
+  ILS (média): 15.00 (1.79s)
+  ILS (melhor): 15
+  Melhoria SI -> SF: 41.86%
+
+[24/48] Instância: 72_ros
+--------------------------------------------------------------------------------
+Executando Gurobi... ✓ CT=16 (0.71s)
+  Solução salva em: solutions/gurobi/72_ros_gurobi.txt
+Executando ILS (5 replicações):
+  Replicação 1/5 (seed=10)... ✓ CT=16 (0.1s)
+  Replicação 2/5 (seed=11)... ✓ CT=16 (0.4s)
+  Replicação 3/5 (seed=12)... ✓ CT=16 (0.8s)
+  Replicação 4/5 (seed=13)... ✓ CT=16 (1.1s)
+  Replicação 5/5 (seed=14)... ✓ CT=16 (0.9s)
+
+Resumo:
+  Gurobi: 16 (0.71s)
+  ILS (média): 16.00 (0.65s)
+  ILS (melhor): 16
+  Melhoria SI -> SF: 45.95%
+
+[25/48] Instância: 1_ton
+--------------------------------------------------------------------------------
+Executando Gurobi... ✓ CT=87 (128.63s)
+  Solução salva em: solutions/gurobi/1_ton_gurobi.txt
+Executando ILS (5 replicações):
+  Replicação 1/5 (seed=10)... ✓ CT=94 (1220.8s)
+  Replicação 2/5 (seed=11)... ✓ CT=102 (700.1s)
+  Replicação 3/5 (seed=12)... ✓ CT=381 (939.9s)
+  Replicação 4/5 (seed=13)... ✓ CT=117 (935.0s)
+  Replicação 5/5 (seed=14)... ✓ CT=110 (908.2s)
+
+Resumo:
+  Gurobi: 87 (128.63s)
+  ILS (média): 160.80 (940.81s)
+  ILS (melhor): 94
+  Melhoria SI -> SF: 88.56%
+
+[26/48] Instância: 2_ton
+--------------------------------------------------------------------------------
+Executando Gurobi... ✓ CT=87 (104.91s)
+  Solução salva em: solutions/gurobi/2_ton_gurobi.txt
+Executando ILS (5 replicações):
+  Replicação 1/5 (seed=10)... ✓ CT=96 (186.6s)
+  Replicação 2/5 (seed=11)... ✓ CT=99 (188.4s)
+  Replicação 3/5 (seed=12)... ✓ CT=89 (194.3s)
+  Replicação 4/5 (seed=13)... ✓ CT=96 (200.0s)
+  Replicação 5/5 (seed=14)... ✓ CT=104 (197.7s)
+
+Resumo:
+  Gurobi: 87 (104.91s)
+  ILS (média): 96.80 (193.39s)
+  ILS (melhor): 89
+  Melhoria SI -> SF: 93.39%
+
+[27/48] Instância: 11_ton
+--------------------------------------------------------------------------------
+Executando Gurobi... ✓ CT=110 (75.22s)
+  Solução salva em: solutions/gurobi/11_ton_gurobi.txt
+Executando ILS (5 replicações):
+  Replicação 1/5 (seed=10)... ✓ CT=112 (118.9s)
+  Replicação 2/5 (seed=11)... ✓ CT=124 (185.2s)
+  Replicação 3/5 (seed=12)... ✓ CT=118 (116.8s)
+  Replicação 4/5 (seed=13)... ✓ CT=125 (121.9s)
+  Replicação 5/5 (seed=14)... ✓ CT=113 (109.7s)
+
+Resumo:
+  Gurobi: 110 (75.22s)
+  ILS (média): 118.40 (130.50s)
+  ILS (melhor): 112
+  Melhoria SI -> SF: 93.54%
+
+[28/48] Instância: 12_ton
+--------------------------------------------------------------------------------
+Executando Gurobi... ✓ CT=108 (166.26s)
+  Solução salva em: solutions/gurobi/12_ton_gurobi.txt
+Executando ILS (5 replicações):
+  Replicação 1/5 (seed=10)... ✓ CT=117 (108.4s)
+  Replicação 2/5 (seed=11)... ✓ CT=123 (120.0s)
+  Replicação 3/5 (seed=12)... ✓ CT=123 (116.2s)
+  Replicação 4/5 (seed=13)... ✓ CT=120 (105.1s)
+  Replicação 5/5 (seed=14)... ✓ CT=124 (118.7s)
+
+Resumo:
+  Gurobi: 108 (166.26s)
+  ILS (média): 121.40 (113.68s)
+  ILS (melhor): 117
+  Melhoria SI -> SF: 91.92%
+
+[29/48] Instância: 41_ton
+--------------------------------------------------------------------------------
+Executando Gurobi... ✗ ERRO ou TIMEOUT
+Executando ILS (5 replicações):
+  Replicação 1/5 (seed=10)... ✓ CT=33 (283.8s)
+  Replicação 2/5 (seed=11)... ✓ CT=38 (279.5s)
+  Replicação 3/5 (seed=12)... ✓ CT=37 (287.4s)
+  Replicação 4/5 (seed=13)... ✓ CT=34 (245.9s)
+  Replicação 5/5 (seed=14)... ✓ CT=47 (808.4s)
+
+Resumo:
+  ILS (média): 37.80 (381.00s)
+  ILS (melhor): 33
+  Melhoria SI -> SF: 97.60%
+
+[30/48] Instância: 42_ton
+--------------------------------------------------------------------------------
+Executando Gurobi... ✗ ERRO ou TIMEOUT
+Executando ILS (5 replicações):
+  Replicação 1/5 (seed=10)... ✓ CT=41 (243.7s)
+  Replicação 2/5 (seed=11)... ✓ CT=43 (241.3s)
+  Replicação 3/5 (seed=12)... ✓ CT=42 (261.4s)
+  Replicação 4/5 (seed=13)... ✓ CT=43 (247.9s)
+  Replicação 5/5 (seed=14)... ✓ CT=38 (252.5s)
+
+Resumo:
+  ILS (média): 41.40 (249.34s)
+  ILS (melhor): 38
+  Melhoria SI -> SF: 96.31%
+
+[31/48] Instância: 51_ton
+--------------------------------------------------------------------------------
+Executando Gurobi... ✗ ERRO ou TIMEOUT
+Executando ILS (5 replicações):
+  Replicação 1/5 (seed=10)... ✓ CT=44 (204.4s)
+  Replicação 2/5 (seed=11)... ✓ CT=41 (181.1s)
+  Replicação 3/5 (seed=12)... ✓ CT=41 (188.6s)
+  Replicação 4/5 (seed=13)... ✓ CT=45 (197.7s)
+  Replicação 5/5 (seed=14)... ✓ CT=46 (179.7s)
+
+Resumo:
+  ILS (média): 43.40 (190.30s)
+  ILS (melhor): 41
+  Melhoria SI -> SF: 97.56%
+
+[32/48] Instância: 52_ton
+--------------------------------------------------------------------------------
+Executando Gurobi... ✓ CT=43 (208.77s)
+  Solução salva em: solutions/gurobi/52_ton_gurobi.txt
+Executando ILS (5 replicações):
+  Replicação 1/5 (seed=10)... ✓ CT=49 (198.5s)
+  Replicação 2/5 (seed=11)... ✓ CT=49 (205.7s)
+  Replicação 3/5 (seed=12)... ✓ CT=46 (197.6s)
+  Replicação 4/5 (seed=13)... ✓ CT=50 (182.0s)
+  Replicação 5/5 (seed=14)... ✓ CT=54 (201.2s)
+
+Resumo:
+  Gurobi: 43 (208.77s)
+  ILS (média): 49.60 (197.00s)
+  ILS (melhor): 46
+  Melhoria SI -> SF: 96.86%
+
+[33/48] Instância: 61_ton
+--------------------------------------------------------------------------------
+Executando Gurobi... 

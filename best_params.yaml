@@ -1,0 +1,6 @@
+cooling_rate: 0.9265194944101449
+improvement_threshold: 133
+initial_temp_factor: 0.05428948243769356
+perturbation_initial: 1
+perturbation_max: 5
+stagnation_threshold: 938

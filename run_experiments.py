@@ -19,6 +19,15 @@ def load_ils_config(config_file='ils_config.yaml'):
                 config = yaml.safe_load(f)
             else:
                 raise ValueError("Formato de arquivo não suportado. Use .yaml ou .yml")
+
+        # Garantir parâmetros obrigatórios com valores padrão para evitar KeyError
+        defaults = {
+            'optimal_tolerance': 0.01,
+        }
+        for key, default_value in defaults.items():
+            if key not in config:
+                config[key] = default_value
+                print(f"Aviso: parâmetro '{key}' ausente em {config_file}. Usando padrão {default_value}")
         
         print(f"✓ Configuração carregada de {config_file}")
         return config
@@ -152,7 +161,7 @@ def run_ils_single(instance_file, instance_name, ils_dir, seed, ils_config, opti
             '--perturbation-max', str(ils_config['perturbation_max']),
             '--improvement-threshold', str(ils_config['improvement_threshold']),
             '--stagnation-threshold', str(ils_config['stagnation_threshold']),
-            '--optimal-tolerance', str(ils_config['optimal_tolerance'])
+            '--optimal-tolerance', str(ils_config.get('optimal_tolerance', 0.01))
         ]
         
         if optimal_value is not None:
