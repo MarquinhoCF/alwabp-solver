@@ -2,7 +2,7 @@
 ALWABP SOLUTION - ILS
 ======================================================================
 
-✓ BEST CYCLE TIME FOUND: 381.00
+✓ BEST CYCLE TIME FOUND: 97.00
   Number of tasks: 70
   Number of workers/stations: 10
 
@@ -10,192 +10,192 @@ ALWABP SOLUTION - ILS
 STATION ASSIGNMENTS
 ----------------------------------------------------------------------
 
-┌─ STATION 0 (Worker 8) ──────────────────────────────────────────────
-│
-│  Tasks assigned: 3
-│  Total time:     76.00
-│  Idle time:      305.00
-│  Utilization:    19.9%
-│
-│  Task Details:
-│    • Task   8  →  Time:  10.00
-│    • Task   9  →  Time:  47.00
-│    • Task  10  →  Time:  19.00
-│
-│  [█████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 19.9%
-└─────────────────────────────────────────────────────────────────────
-
-┌─ STATION 1 (Worker 4) ──────────────────────────────────────────────
+┌─ STATION 0 (Worker 4) ──────────────────────────────────────────────
 │
 │  Tasks assigned: 8
-│  Total time:     71.00
-│  Idle time:      310.00
-│  Utilization:    18.6%
+│  Total time:     94.00
+│  Idle time:      3.00
+│  Utilization:    96.9%
 │
 │  Task Details:
 │    • Task   0  →  Time:   7.00
 │    • Task   1  →  Time:   6.00
+│    • Task   2  →  Time:  45.00
+│    • Task   3  →  Time:   2.00
 │    • Task   4  →  Time:   1.00
-│    • Task  23  →  Time:   9.00
-│    • Task  29  →  Time:   3.00
-│    • Task  40  →  Time:   6.00
+│    • Task   6  →  Time:  16.00
+│    • Task   8  →  Time:   1.00
 │    • Task  68  →  Time:  16.00
-│    • Task  69  →  Time:  23.00
 │
-│  [█████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 18.6%
+│  [████████████████████████████████████████████████░░] 96.9%
 └─────────────────────────────────────────────────────────────────────
 
-┌─ STATION 2 (Worker 3) ──────────────────────────────────────────────
+┌─ STATION 1 (Worker 3) ──────────────────────────────────────────────
 │
 │  Tasks assigned: 5
-│  Total time:     69.00
-│  Idle time:      312.00
-│  Utilization:    18.1%
+│  Total time:     97.00
+│  Idle time:      0.00
+│  Utilization:    100.0%
 │
 │  Task Details:
-│    • Task   2  →  Time:   9.00
+│    • Task   9  →  Time:  37.00
 │    • Task  14  →  Time:   9.00
 │    • Task  15  →  Time:  17.00
 │    • Task  16  →  Time:  10.00
 │    • Task  17  →  Time:  24.00
 │
-│  [█████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 18.1%
+│  [██████████████████████████████████████████████████] 100.0%
 └─────────────────────────────────────────────────────────────────────
 
-┌─ STATION 3 (Worker 2) ──────────────────────────────────────────────
+┌─ STATION 2 (Worker 2) ──────────────────────────────────────────────
 │
-│  Tasks assigned: 6
-│  Total time:     73.00
-│  Idle time:      308.00
-│  Utilization:    19.2%
+│  Tasks assigned: 10
+│  Total time:     92.00
+│  Idle time:      5.00
+│  Utilization:    94.8%
 │
 │  Task Details:
-│    • Task   3  →  Time:  11.00
 │    • Task   5  →  Time:  14.00
+│    • Task  10  →  Time:   5.00
 │    • Task  18  →  Time:  13.00
 │    • Task  19  →  Time:  20.00
 │    • Task  20  →  Time:   7.00
+│    • Task  23  →  Time:   4.00
+│    • Task  29  →  Time:   8.00
+│    • Task  40  →  Time:   4.00
+│    • Task  56  →  Time:   9.00
 │    • Task  67  →  Time:   8.00
 │
-│  [█████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 19.2%
+│  [███████████████████████████████████████████████░░░] 94.8%
 └─────────────────────────────────────────────────────────────────────
 
-┌─ STATION 4 (Worker 0) ──────────────────────────────────────────────
+┌─ STATION 3 (Worker 1) ──────────────────────────────────────────────
 │
 │  Tasks assigned: 4
-│  Total time:     66.00
-│  Idle time:      315.00
-│  Utilization:    17.3%
+│  Total time:     96.00
+│  Idle time:      1.00
+│  Utilization:    99.0%
 │
 │  Task Details:
-│    • Task   6  →  Time:  21.00
-│    • Task  56  →  Time:  22.00
-│    • Task  57  →  Time:   7.00
-│    • Task  58  →  Time:  16.00
+│    • Task   7  →  Time:  18.00
+│    • Task  11  →  Time:   1.00
+│    • Task  12  →  Time:  75.00
+│    • Task  21  →  Time:   2.00
 │
-│  [████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 17.3%
+│  [█████████████████████████████████████████████████░] 99.0%
+└─────────────────────────────────────────────────────────────────────
+
+┌─ STATION 4 (Worker 8) ──────────────────────────────────────────────
+│
+│  Tasks assigned: 8
+│  Total time:     94.00
+│  Idle time:      3.00
+│  Utilization:    96.9%
+│
+│  Task Details:
+│    • Task  13  →  Time:  33.00
+│    • Task  22  →  Time:   5.00
+│    • Task  24  →  Time:  20.00
+│    • Task  25  →  Time:   5.00
+│    • Task  27  →  Time:  12.00
+│    • Task  32  →  Time:  11.00
+│    • Task  33  →  Time:   6.00
+│    • Task  69  →  Time:   2.00
+│
+│  [████████████████████████████████████████████████░░] 96.9%
 └─────────────────────────────────────────────────────────────────────
 
 ┌─ STATION 5 (Worker 6) ──────────────────────────────────────────────
 │
-│  Tasks assigned: 4
-│  Total time:     82.00
-│  Idle time:      299.00
-│  Utilization:    21.5%
+│  Tasks assigned: 11
+│  Total time:     92.00
+│  Idle time:      5.00
+│  Utilization:    94.8%
 │
 │  Task Details:
-│    • Task   7  →  Time:  44.00
-│    • Task  11  →  Time:  21.00
-│    • Task  12  →  Time:   8.00
-│    • Task  21  →  Time:   9.00
+│    • Task  26  →  Time:  10.00
+│    • Task  28  →  Time:  15.00
+│    • Task  30  →  Time:  18.00
+│    • Task  31  →  Time:  16.00
+│    • Task  34  →  Time:   4.00
+│    • Task  50  →  Time:   8.00
+│    • Task  51  →  Time:   3.00
+│    • Task  52  →  Time:   4.00
+│    • Task  53  →  Time:   3.00
+│    • Task  55  →  Time:   7.00
+│    • Task  61  →  Time:   4.00
 │
-│  [██████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 21.5%
+│  [███████████████████████████████████████████████░░░] 94.8%
 └─────────────────────────────────────────────────────────────────────
 
-┌─ STATION 6 (Worker 1) ──────────────────────────────────────────────
+┌─ STATION 6 (Worker 5) ──────────────────────────────────────────────
 │
 │  Tasks assigned: 6
-│  Total time:     144.00
-│  Idle time:      237.00
-│  Utilization:    37.8%
+│  Total time:     95.00
+│  Idle time:      2.00
+│  Utilization:    97.9%
 │
 │  Task Details:
-│    • Task  13  →  Time:  77.00
-│    • Task  22  →  Time:   6.00
-│    • Task  30  →  Time:   3.00
-│    • Task  31  →  Time:  44.00
-│    • Task  32  →  Time:   7.00
-│    • Task  33  →  Time:   7.00
+│    • Task  35  →  Time:   1.00
+│    • Task  43  →  Time:   1.00
+│    • Task  44  →  Time:  16.00
+│    • Task  45  →  Time:  10.00
+│    • Task  47  →  Time:   4.00
+│    • Task  62  →  Time:  63.00
 │
-│  [██████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 37.8%
+│  [████████████████████████████████████████████████░░] 97.9%
 └─────────────────────────────────────────────────────────────────────
 
-┌─ STATION 7 (Worker 5) ──────────────────────────────────────────────
+┌─ STATION 7 (Worker 0) ──────────────────────────────────────────────
 │
-│  Tasks assigned: 4
-│  Total time:     137.00
-│  Idle time:      244.00
-│  Utilization:    36.0%
+│  Tasks assigned: 7
+│  Total time:     89.00
+│  Idle time:      8.00
+│  Utilization:    91.8%
 │
 │  Task Details:
-│    • Task  24  →  Time:  43.00
-│    • Task  25  →  Time:  20.00
-│    • Task  27  →  Time:  65.00
-│    • Task  28  →  Time:   9.00
+│    • Task  36  →  Time:   2.00
+│    • Task  37  →  Time:   1.00
+│    • Task  38  →  Time:   3.00
+│    • Task  57  →  Time:   7.00
+│    • Task  58  →  Time:  16.00
+│    • Task  59  →  Time:  32.00
+│    • Task  63  →  Time:  28.00
 │
-│  [█████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 36.0%
+│  [█████████████████████████████████████████████░░░░░] 91.8%
 └─────────────────────────────────────────────────────────────────────
 
 ┌─ STATION 8 (Worker 0) ──────────────────────────────────────────────
 │
-│  Tasks assigned: 14
-│  Total time:     380.00
-│  Idle time:      1.00
-│  Utilization:    99.7%
+│  Tasks assigned: 4
+│  Total time:     89.00
+│  Idle time:      8.00
+│  Utilization:    91.8%
 │
 │  Task Details:
-│    • Task  26  →  Time:  45.00
-│    • Task  34  →  Time:  35.00
-│    • Task  35  →  Time:  40.00
-│    • Task  36  →  Time:   2.00
-│    • Task  37  →  Time:   1.00
-│    • Task  38  →  Time:   3.00
 │    • Task  39  →  Time:  13.00
 │    • Task  41  →  Time:  25.00
-│    • Task  43  →  Time:  43.00
-│    • Task  44  →  Time:  30.00
-│    • Task  47  →  Time:  56.00
-│    • Task  50  →  Time:  11.00
-│    • Task  52  →  Time:  44.00
-│    • Task  59  →  Time:  32.00
+│    • Task  60  →  Time:  25.00
+│    • Task  65  →  Time:  26.00
 │
-│  [█████████████████████████████████████████████████░] 99.7%
+│  [█████████████████████████████████████████████░░░░░] 91.8%
 └─────────────────────────────────────────────────────────────────────
 
-┌─ STATION 9 (Worker 9) ──────────────────────────────────────────────
+┌─ STATION 9 (Worker 7) ──────────────────────────────────────────────
 │
-│  Tasks assigned: 16
-│  Total time:     381.00
+│  Tasks assigned: 7
+│  Total time:     97.00
 │  Idle time:      0.00
 │  Utilization:    100.0%
 │
 │  Task Details:
-│    • Task  42  →  Time:  12.00
-│    • Task  45  →  Time:  24.00
-│    • Task  46  →  Time:  84.00
-│    • Task  48  →  Time:   3.00
-│    • Task  49  →  Time:   8.00
-│    • Task  51  →  Time:   2.00
-│    • Task  53  →  Time: 114.00
-│    • Task  54  →  Time:  27.00
-│    • Task  55  →  Time:  40.00
-│    • Task  60  →  Time:   3.00
-│    • Task  61  →  Time:   2.00
-│    • Task  62  →  Time:  43.00
-│    • Task  63  →  Time:   6.00
-│    • Task  64  →  Time:   4.00
-│    • Task  65  →  Time:   5.00
-│    • Task  66  →  Time:   4.00
+│    • Task  42  →  Time:   6.00
+│    • Task  46  →  Time:  24.00
+│    • Task  48  →  Time:   7.00
+│    • Task  49  →  Time:  27.00
+│    • Task  54  →  Time:   4.00
+│    • Task  64  →  Time:  13.00
+│    • Task  66  →  Time:  16.00
 │
 │  [██████████████████████████████████████████████████] 100.0%
 └─────────────────────────────────────────────────────────────────────
@@ -204,15 +204,15 @@ STATION ASSIGNMENTS
 SUMMARY STATISTICS
 ======================================================================
 
-  Total task time:       1479.00
-  Total available time:  3810.00
-  Total idle time:       2331.00
-  Overall utilization:   38.8%
-  Line efficiency:       38.8%
-  Balance index:         82.7% (lower is better)
+  Total task time:       935.00
+  Total available time:  970.00
+  Total idle time:       35.00
+  Overall utilization:   96.4%
+  Line efficiency:       96.4%
+  Balance index:         8.2% (lower is better)
 
 ======================================================================
 
 INITIAL_CYCLE_TIME: 677
 
-FINAL_CYCLE_TIME: 381
+FINAL_CYCLE_TIME: 97
