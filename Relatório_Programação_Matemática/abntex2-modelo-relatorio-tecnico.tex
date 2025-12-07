@@ -82,7 +82,7 @@
 % Informações de dados para CAPA e FOLHA DE ROSTO
 % ---
 \titulo{Trabalho Prático Final -- GCC118  Programação Matemática -- PCC540  Linear and Integer Programming }
-\autor{ Douglas Geovanini de Paiva Mosca Leite, \\ Luiz Otávio... \\ \& Marcos...}
+\autor{ Douglas Geovanini de Paiva Mosca Leite, \\ Luiz Otávio Andrade Soares \\ \& Marcos Carvalho Ferreira}
 \local{Brasil}
 \data{2025, Lavras}
 \instituicao{%
@@ -91,7 +91,7 @@
 \tipotrabalho{Relatório técnico}
 % O preambulo deve conter o tipo do trabalho, o objetivo, 
 % o nome da instituição e a área de concentração 
-\preambulo{Trabalho Prático Final -- GCC118  Programação Matemática -- PCC540  Linear and Integer Programming\LaTeX.}
+\preambulo{Trabalho Prático Final -- GCC118  Programação Matemática -- PCC540  Linear and Integer Programming.}
 % ---
 
 % ---
@@ -358,7 +358,7 @@ C \ge 0
 \]
 
 \chapter{Iterated Local Search}
-\ref{cap_ils}
+\label{cap:ils}
 
 O Iterated Local Search (ILS) é uma meta-heurística estocástica de otimização combinatorial pertencente à classe de algoritmos de busca baseada em trajetórias. O ILS tem como objetivo focar a busca em um subespaço reduzido, composto pelas soluções que são ótimos locais \(S^*\) para um determinado motor de otimização (normalmente uma busca local). A ideia central do ILS não é explorar o espaço de busca de forma completamente nova a cada iteração, mas sim realizar uma amostragem enviesada (ou dirigida) do conjunto de ótimos locais \cite{lourenco2001gentle}.
 
@@ -478,7 +478,7 @@ A temperatura inicial \( T_0 \) é definida como uma fração do custo inicial, 
 T_0 = 0.1 \times f(s_{\text{inicial}})
 \]
 
-Ao longo das iterações, a temperatura é progressivamente reduzida por meio de um fator de resfriamento \( \alpha = 0.95 \), seguindo a atualização:
+Ao longo das iterações, a temperatura é progressivamente reduzida por meio de um fator de resfriamento (\( \alpha \in (0,1)\)), seguindo a atualização:
 
 \[
 T_{k+1} = \alpha \times T_k
@@ -490,17 +490,17 @@ Essa estratégia de resfriamento controlado permite um equilíbrio entre a fase 
 
 \subsubsection{Adaptação Dinâmica da Perturbação}
 
-Foi implementada uma estratégia de adaptação dinâmica da perturbação, na qual o parâmetro $strength$ que define a intensidade da perturbação, é ajustado dinamicamente durante a execução do algoritmo. Inicialmente, $strength$ é definido com o valor padrão (normalmente 2). Sempre que o algoritmo ultrapassa um limiar pré-definido de iterações consecutivas (padrão 50) sem melhorias na solução, o valor de $strength$ é incrementado em uma unidade, até atingir um limite máximo pré-definido (5 padrão). 
+Foi implementada uma estratégia de adaptação dinâmica da perturbação, na qual o parâmetro $strength$ que define a intensidade da perturbação, é ajustado dinamicamente durante a execução do algoritmo. Inicialmente, $strength$ é definido com o valor padrão. Sempre que o algoritmo ultrapassa um limiar pré-definido de iterações consecutivas sem melhorias na solução, o valor de $strength$ é incrementado em uma unidade, até atingir um limite máximo pré-definido. 
 
 \subsubsection{Reinicialização}
 
-Foi implementado uma estratégia de reinicialização para evitar cenários de exaustão da região de busca local. Dessa forma, quando o algoritmo executa um número pré-definido de iterações (1000 padrão) iterações consecutivas sem que o \textit{Simulated Anealing} aceite nenhuma nova solução o procedimento é acionado:
+Foi implementado uma estratégia de reinicialização para evitar cenários de exaustão da região de busca local. Dessa forma, quando o algoritmo executa um número pré-definido de iterações consecutivas sem que o \textit{Simulated Anealing} aceite nenhuma nova solução o procedimento é acionado:
 
 \begin{enumerate}
 \item Gera uma nova solução inicial através da heurística RPW
 \item Aplica VND nesta nova solução
 \item Reinicia a temperatura para o valor inicial
-\item Define $strength = valor_inicial + 1$ (ligeiramente maior que o inicial)
+\item Define $strength = valor\;inicial + 1$ (ligeiramente maior que o inicial)
 \item Mantém a melhor solução encontrada globalmente
 \end{enumerate}
 
@@ -522,7 +522,7 @@ A implementação emprega um critério de parada multicondicional, garantindo qu
 
 \chapter{Metodologia}
 
-Este capítulo descreve a metodologia empregada para a avaliação do Solver Gurobi e a implementação algoritmo ILS proposto para o ALWABP descrito no capítulo \ref{cap_ils}. São detalhados os procedimentos de otimização de parâmetros, a seleção das instâncias de teste, o protocolo experimental adotado e as métricas utilizadas para análise de desempenho.
+Este capítulo descreve a metodologia empregada para a avaliação do Solver Gurobi e a implementação algoritmo ILS proposto para o ALWABP descrito no capítulo \ref{cap:ils}. São detalhados os procedimentos de otimização de parâmetros, a seleção das instâncias de teste, o protocolo experimental adotado e as métricas utilizadas para análise de desempenho.
 
 \section{Otimização de Parâmetros}
 
@@ -561,7 +561,7 @@ O processo de otimização seguiu o seguinte protocolo:
 \begin{enumerate}
 \item Seleção da \textit{72 Tonge} como instância representativa do conjunto de teste para calibração
 \item Execução de 20 trials do algoritmo TPE
-\item Limite de tempo de 300 segundos por trial
+\item Limite de tempo de 700 segundos por trial
 \item Registro do tempo de ciclo final e do gap em relação ao valor ótimo conhecido
 \item Armazenamento da melhor configuração encontrada em arquivo YAML para uso nos experimentos posteriores
 \end{enumerate}

@@ -1,5 +1,5 @@
 """
-Otimização de Pparâmetros para ILS-ALWABP usando Optuna
+Otimização de Parâmetros para ILS-ALWABP usando Optuna
 
 Este script realiza otimização automática dos parâmetros do algoritmo ILS
 usando Optuna (Tree-structured Parzen Estimator - TPE).
