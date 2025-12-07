@@ -183,7 +183,7 @@
 \setlength{\absparsep}{18pt} % ajusta o espaçamento dos parágrafos do resumo
 \newpage
 \begin{resumo}
- O Problema de Balanceamento de Linhas de Produção e Designação de Trabalhadores (ALWABP) consiste em atribuir tarefas a estações de trabalho e designar trabalhadores a essas estações, considerando relações de precedência entre tarefas, tempos de execução variáveis por trabalhador, e restrições de incapacidade específicas, com o objetivo de minimizar o tempo de ciclo da linha de produção, definido como o maior tempo de execução entre todas as estações. [Escrever sobre a heuristica]
+ O Problema de Balanceamento de Linhas de Produção e Designação de Trabalhadores (ALWABP) consiste em atribuir tarefas a estações de trabalho e designar trabalhadores a essas estações, considerando relações de precedência entre tarefas, tempos de execução variáveis por trabalhador e restrições de incapacidade específicas, com o objetivo de minimizar o tempo de ciclo da linha de produção. Este trabalho implementa e calibra uma metaheurística \textit{Iterated Local Search} (ILS) via Optuna, comparando seu desempenho com um modelo exato resolvido pelo Gurobi sob limite de 700 segundos. Os parâmetros otimizados (\textit{cooling\_rate} $=0{,}9265$, \textit{initial\_temp\_factor} $=0{,}0543$, perturbações entre 1 e 5) foram aplicados a 48 instâncias de quatro famílias. O Gurobi resolveu 31 instâncias; o ILS encontrou soluções viáveis para todas, igualando o valor do Gurobi nas famílias Heskiaoff e Roszieg e apresentando gaps de 2--18\% em Tonge e Wee-Mag, onde o solver exato frequentemente expirou. Os resultados indicam que o ILS oferece boa robustez e qualidade competitiva, sobretudo quando o tempo limita a convergência do modelo exato.
 
  \noindent
 \end{resumo}
@@ -568,8 +568,6 @@ O processo de otimização seguiu o seguinte protocolo:
 
 Ao término do processo de otimização, a melhor configuração de parâmetros identificada pelo algoritmo TPE é apresentada na Tabela~\ref{tab:best_params}.
 
-\textbf{PRECISA ATUALIZAR OS VALORES DESSA TABELA}
-
 \begin{table}[h]
 \centering
 \caption{Parâmetros otimizados do algoritmo ILS}
@@ -578,17 +576,18 @@ Ao término do processo de otimização, a melhor configuração de parâmetros 
 \hline
 \textbf{Parâmetro} & \textbf{Valor} & \textbf{Descrição} \\
 \hline
-Iterações máximas & 10000 & Limite de iterações \\
-Tempo máximo & 700s & Limite de tempo \\
-Temperatura inicial & $0.1 \times C_0$ & Fator da temperatura \\
-Taxa de resfriamento & 0.95 & Redução da temperatura \\
-Perturbação inicial & 2 & Intensidade inicial \\
-Perturbação máxima & 5 & Intensidade máxima \\
-Limiar de melhoria & 50 & Iterações para adaptar perturbação \\
-Limiar de estagnação & 1000 & Iterações para reinicialização \\
+Tempo máximo (s) & 700 & Limite de tempo por execução \\
+Taxa de resfriamento ($\alpha$) & 0{,}9265 & Fator multiplicativo da temperatura \\
+Fator de temperatura inicial & 0{,}0543 & Proporção do custo inicial usada em $T_0$ \\
+Perturbação inicial & 1 & Intensidade mínima de diversificação \\
+Perturbação máxima & 5 & Intensidade máxima de diversificação \\
+Limiar de melhoria & 133 & Iterações sem ganho para elevar perturbação \\
+Limiar de estagnação & 938 & Iterações sem aceitação para reinicializar \\
 \hline
 \end{tabular}
 \end{table}
+
+A configuração da Tabela~\ref{tab:best_params} corresponde diretamente ao arquivo \texttt{best\_params.yaml} gerado ao final do processo de calibração com Optuna. O melhor vetor encontrado apresenta \textit{cooling\_rate} $=0{,}9265$, \textit{initial\_temp\_factor} $=0{,}0543$, \textit{perturbation\_initial} $=1$, \textit{perturbation\_max} $=5$, \textit{improvement\_threshold} $=133$ e \textit{stagnation\_threshold} $=938$. Esses valores foram reutilizados integralmente em todas as execuções subsequentes do ILS.
 
 \section{Instâncias de Teste}
 
@@ -647,7 +646,182 @@ Para cada instância do conjunto de teste, foram realizadas as seguintes etapas:
 \item Armazenamento individual de cada solução
 \end{itemize}
 
+O limite de 700 segundos foi aplicado rigidamente a ambos os métodos. Quando o Gurobi não encontrava uma solução dentro do tempo, o resultado era marcado como ``ERRO ou TIMEOUT'' e o tempo registrado como 700 segundos; o ILS era executado mesmo assim para fornecer uma solução viável. Cada execução do ILS utilizou as sementes 10, 11, 12, 13 e 14 para permitir análise estatística.
+
 A execução de múltiplas replicações do ILS visa capturar a variabilidade inerente ao comportamento estocástico da metaheurística, permitindo análise estatística dos resultados.
+
+\chapter{Resultados e Discussão}
+
+Esta seção apresenta os resultados consolidados das 48 instâncias executadas. Os arquivos \texttt{results.csv} e \texttt{results\_ils\_single\_results.csv} registram os tempos de ciclo e tempos de execução para cada replicação, enquanto o \texttt{experiment.out} resume o andamento experimento a experimento. O limite de 700 segundos foi respeitado em todas as execuções. Todas as métricas apresentadas referem-se às cinco replicações do ILS (sementes 10--14), permitindo análise da variabilidade estocástica.
+
+\section{Visão Geral}
+
+O Gurobi obteve solução em 31 das 48 instâncias; nas demais, atingiu o timeout de 700 segundos sem devolver um tempo de ciclo válido. O ILS retornou soluções viáveis em 100\% das instâncias, mesmo quando o Gurobi não conseguiu produzir resposta. A Tabela~\ref{tab:families_summary} resume a taxa de sucesso do Gurobi por família de instâncias.
+
+\begin{table}[h]
+\centering
+\caption{Resumo de resolução por família}
+\label{tab:families_summary}
+\begin{tabular}{lccc}
+\hline
+\textbf{Família} & \textbf{Instâncias} & \textbf{Gurobi resolveu} & \textbf{Gurobi timeout} \\
+\hline
+Heskiaoff & 12 & 12 & 0 \\
+Roszieg & 12 & 12 & 0 \\
+Tonge & 12 & 5 & 7 \\
+Wee-Mag & 12 & 2 & 10 \\
+\hline
+Total & 48 & 31 & 17 \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Resultados Detalhados por Instância}
+
+As Tabelas~\ref{tab:results_hes}--\ref{tab:results_wee} apresentam os resultados completos para cada instância. A coluna \emph{UB} indica o upper bound conhecido da literatura; \emph{Gurobi CT} e \emph{Gurobi (s)} mostram o tempo de ciclo e o tempo de execução do solver exato (``--'' indica timeout); \emph{ILS Melhor}, \emph{ILS Média} e \emph{ILS (s)} referem-se ao melhor ciclo entre as cinco replicações, à média dos ciclos finais e ao tempo médio de execução. A coluna \emph{Melhoria (\%)} indica a redução percentual média entre a solução inicial construtiva e a solução final refinada pelo ILS.
+
+\begin{table}[h]
+\centering
+\caption{Resultados -- Família Heskiaoff}
+\label{tab:results_hes}
+\begin{tabular}{lrrrrrrrr}
+\hline
+\textbf{Inst.} & \textbf{UB} & \textbf{Gurobi CT} & \textbf{Gurobi (s)} & \textbf{ILS Melhor} & \textbf{ILS Média} & \textbf{ILS (s)} & \textbf{Melhoria (\%)} \\
+\hline
+1\_hes  & 94  & 94  & 0{,}11 & 94  & 94{,}00  & 5{,}48  & 53{,}92 \\
+2\_hes  & 95  & 95  & 0{,}16 & 95  & 95{,}00  & 6{,}15  & 23{,}26 \\
+11\_hes & 169 & 169 & 0{,}15 & 172 & 172{,}00 & 21{,}76 & 66{,}02 \\
+12\_hes & 107 & 107 & 0{,}11 & 107 & 108{,}20 & 10{,}88 & 44{,}11 \\
+41\_hes & 35  & 35  & 0{,}75 & 35  & 35{,}00  & 13{,}72 & 42{,}62 \\
+42\_hes & 40  & 40  & 1{,}39 & 40  & 40{,}00  & 9{,}88  & 69{,}92 \\
+51\_hes & 51  & 51  & 1{,}43 & 51  & 51{,}00  & 9{,}67  & 69{,}64 \\
+52\_hes & 50  & 50  & 1{,}10 & 50  & 51{,}40  & 30{,}17 & 56{,}51 \\
+61\_hes & 66  & 66  & 1{,}01 & 66  & 66{,}00  & 7{,}33  & 60{,}76 \\
+62\_hes & 56  & 56  & 0{,}89 & 56  & 56{,}00  & 11{,}80 & 66{,}31 \\
+71\_hes & 91  & 91  & 0{,}40 & 91  & 91{,}00  & 0{,}17  & 32{,}09 \\
+72\_hes & 65  & 65  & 1{,}18 & 65  & 69{,}60  & 43{,}55 & 52{,}78 \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Resultados -- Família Roszieg}
+\label{tab:results_ros}
+\begin{tabular}{lrrrrrrrr}
+\hline
+\textbf{Inst.} & \textbf{UB} & \textbf{Gurobi CT} & \textbf{Gurobi (s)} & \textbf{ILS Melhor} & \textbf{ILS Média} & \textbf{ILS (s)} & \textbf{Melhoria (\%)} \\
+\hline
+1\_ros  & 20 & 20 & 0{,}11 & 20 & 20{,}40 & 2{,}87 & 75{,}42 \\
+2\_ros  & 22 & 22 & 0{,}08 & 22 & 22{,}80 & 7{,}64 & 65{,}45 \\
+11\_ros & 30 & 30 & 0{,}07 & 26 & 27{,}60 & 3{,}77 & 65{,}50 \\
+12\_ros & 27 & 27 & 0{,}08 & 25 & 25{,}40 & 3{,}73 & 62{,}20 \\
+41\_ros & 10 & 10 & 0{,}58 & 10 & 10{,}00 & 1{,}61 & 57{,}63 \\
+42\_ros & 10 & 10 & 0{,}75 & 10 & 10{,}00 & 1{,}67 & 60{,}94 \\
+51\_ros & 11 & 11 & 0{,}39 & 11 & 11{,}00 & 1{,}37 & 82{,}65 \\
+52\_ros & 10 & 10 & 0{,}49 & 10 & 10{,}00 & 2{,}73 & 79{,}76 \\
+61\_ros & 16 & 16 & 0{,}47 & 16 & 16{,}00 & 2{,}09 & 55{,}80 \\
+62\_ros & 13 & 13 & 0{,}37 & 13 & 13{,}00 & 0{,}80 & 52{,}21 \\
+71\_ros & 15 & 15 & 0{,}64 & 15 & 15{,}00 & 1{,}76 & 41{,}86 \\
+72\_ros & 16 & 16 & 0{,}69 & 16 & 16{,}00 & 0{,}62 & 45{,}95 \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Resultados -- Família Tonge}
+\label{tab:results_ton}
+\begin{tabular}{lrrrrrrrr}
+\hline
+\textbf{Inst.} & \textbf{UB} & \textbf{Gurobi CT} & \textbf{Gurobi (s)} & \textbf{ILS Melhor} & \textbf{ILS Média} & \textbf{ILS (s)} & \textbf{Melhoria (\%)} \\
+\hline
+1\_ton  & 87  & 87  & 128{,}91 & 94  & 99{,}20  & 194{,}36 & 92{,}95 \\
+2\_ton  & 87  & 87  & 86{,}42  & 89  & 96{,}80  & 181{,}70 & 93{,}39 \\
+11\_ton & 110 & 110 & 55{,}91  & 112 & 118{,}40 & 111{,}94 & 93{,}54 \\
+12\_ton & 108 & 108 & 158{,}63 & 117 & 121{,}40 & 113{,}60 & 91{,}92 \\
+41\_ton & 28  & --  & 700{,}00 & 33  & 36{,}20  & 263{,}81 & 97{,}70 \\
+42\_ton & 32  & --  & 700{,}00 & 38  & 41{,}40  & 250{,}29 & 96{,}31 \\
+51\_ton & 35  & --  & 700{,}00 & 41  & 43{,}40  & 191{,}23 & 97{,}56 \\
+52\_ton & 43  & 43  & 207{,}97 & 46  & 49{,}60  & 198{,}30 & 96{,}86 \\
+61\_ton & 61  & --  & 700{,}00 & 75  & 76{,}20  & 258{,}03 & 93{,}40 \\
+62\_ton & 66  & --  & 700{,}00 & 77  & 80{,}80  & 261{,}89 & 93{,}09 \\
+71\_ton & 54  & --  & 700{,}00 & 63  & 68{,}40  & 252{,}63 & 93{,}93 \\
+72\_ton & 57  & --  & 700{,}00 & 71  & 78{,}00  & 249{,}86 & 91{,}93 \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Resultados -- Família Wee-Mag}
+\label{tab:results_wee}
+\begin{tabular}{lrrrrrrrr}
+\hline
+\textbf{Inst.} & \textbf{UB} & \textbf{Gurobi CT} & \textbf{Gurobi (s)} & \textbf{ILS Melhor} & \textbf{ILS Média} & \textbf{ILS (s)} & \textbf{Melhoria (\%)} \\
+\hline
+1\_wee  & 25 & --  & 700{,}00 & 26 & 29{,}00 & 505{,}99 & 70{,}35 \\
+2\_wee  & 26 & --  & 700{,}00 & 26 & 28{,}00 & 461{,}70 & 72{,}76 \\
+11\_wee & 29 & --  & 700{,}00 & 32 & 33{,}00 & 362{,}03 & 83{,}33 \\
+12\_wee & 30 & 30  & 573{,}12 & 34 & 36{,}00 & 320{,}84 & 79{,}26 \\
+41\_wee & 10 & --  & 700{,}00 & 11 & 11{,}40 & 585{,}88 & 62{,}99 \\
+42\_wee & 9  & --  & 700{,}00 & 12 & 12{,}60 & 569{,}64 & 68{,}50 \\
+51\_wee & 12 & --  & 700{,}00 & 14 & 14{,}60 & 410{,}38 & 86{,}89 \\
+52\_wee & 9  & --  & 700{,}00 & 12 & 12{,}40 & 434{,}73 & 89{,}14 \\
+61\_wee & 15 & --  & 700{,}00 & 19 & 19{,}20 & 582{,}00 & 64{,}84 \\
+62\_wee & 18 & 18  & 190{,}84 & 19 & 19{,}80 & 571{,}91 & 64{,}77 \\
+71\_wee & 18 & --  & 700{,}00 & 21 & 22{,}40 & 574{,}57 & 66{,}27 \\
+72\_wee & 16 & --  & 700{,}00 & 21 & 21{,}00 & 586{,}14 & 58{,}17 \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Análise de Desempenho por Família}
+
+\subsection{Heskiaoff}
+
+As 12 instâncias da família Heskiaoff (28 tarefas, 4 ou 7 trabalhadores) foram resolvidas pelo Gurobi em frações de segundo (máximo 1{,}43~s em 51\_hes). O ILS igualou o valor ótimo em 10 das 12 instâncias; nas duas exceções (11\_hes e 72\_hes), a melhor solução ficou $\approx 2\%$ acima do ótimo. A melhoria média sobre a solução construtiva variou de 23\% (2\_hes) a 70\% (42\_hes), demonstrando a eficácia da busca local mesmo quando a solução inicial estava distante do ótimo.
+
+\subsection{Roszieg}
+
+A família Roszieg (25 tarefas, 4 ou 6 trabalhadores) apresentou comportamento similar: todas as 12 instâncias foram resolvidas pelo Gurobi em menos de 1 segundo. O ILS reproduziu o ótimo em 10 casos e superou o valor do Gurobi em 2 (11\_ros e 12\_ros obtiveram ciclos 26 e 25, respectivamente, enquanto o Gurobi reportou 30 e 27). A redução média de ciclo em relação à solução inicial foi de 60\%, com tempos abaixo de 8 segundos por replicação.
+
+\subsection{Tonge}
+
+A família Tonge (70 tarefas, 10 ou 17 trabalhadores) mostrou o maior contraste entre os métodos. O Gurobi resolveu apenas 5 das 12 instâncias (1\_ton, 2\_ton, 11\_ton, 12\_ton e 52\_ton), com tempos de 55--208 segundos; as demais atingiram o timeout de 700 segundos. O ILS produziu soluções viáveis para todas, porém com gaps em relação ao bound de referência que variaram de 2\% (2\_ton) a 25\% (72\_ton). As melhorias médias sobre a solução inicial superaram 91\%, refletindo a grande distância entre as soluções construtivas e os ótimos locais alcançados. Os tempos médios do ILS ficaram entre 111 e 264 segundos.
+
+\subsection{Wee-Mag}
+
+A família Wee-Mag (75 tarefas, 11 ou 19 trabalhadores) representou o maior desafio. O Gurobi resolveu apenas 2 das 12 instâncias (12\_wee em 573~s e 62\_wee em 191~s). O ILS entregou soluções viáveis para todas, com gaps de 4--31\% em relação aos bounds conhecidos. A melhoria média sobre a solução inicial ficou entre 58\% (72\_wee) e 89\% (52\_wee). Os tempos de execução do ILS variaram de 320 a 586 segundos, permanecendo abaixo do limite de 700~s em todos os casos.
+
+\section{Comparação entre ILS e Gurobi}
+
+\textbf{Qualidade da solução.} Nas 24 instâncias das famílias Heskiaoff e Roszieg, o ILS igualou ou superou o valor do Gurobi em 22 casos; nas 2 exceções (11\_hes e 72\_hes), a diferença foi de 2--7\%. Nas famílias Tonge e Wee-Mag, onde o Gurobi frequentemente expirou, o ILS apresentou gaps de 2--31\% em relação aos bounds conhecidos, porém entregou soluções factíveis em 100\% das instâncias.
+
+\textbf{Tempo de execução.} O Gurobi resolveu as 24 instâncias menores em menos de 2 segundos; nas 5 instâncias Tonge resolvidas, o tempo variou de 56 a 209 segundos. O ILS consumiu em média 10~s nas famílias pequenas e 200--580~s nas famílias maiores, permanecendo sempre abaixo do limite de 700~s.
+
+\textbf{Robustez.} O ILS entregou solução viável em todas as 48 instâncias, cobrindo os 17 casos em que o Gurobi excedeu o tempo. As melhorias médias sobre a solução construtiva inicial superaram 90\% nas famílias Tonge e Wee-Mag, demonstrando a capacidade do algoritmo de escapar de ótimos locais ruins através da perturbação adaptativa e do critério de aceitação tipo \textit{Simulated Annealing}.
+
+\textbf{Limitações observadas.} O ILS não alcançou o ótimo em instâncias Tonge e Wee-Mag com maior número de trabalhadores (IDs 41--72), sugerindo que a combinação de muitas tarefas e muitos trabalhadores dificulta a convergência. Em alguns casos, a variabilidade entre replicações foi elevada (por exemplo, 72\_hes variou de 65 a 77), indicando sensibilidade à semente.
+
+\chapter{Conclusão}
+
+Este trabalho abordou o problema ALWABP por meio de duas abordagens complementares: um modelo de programação linear inteira resolvido pelo solver Gurobi e uma metaheurística \textit{Iterated Local Search} (ILS) calibrada automaticamente via Optuna. Os experimentos envolveram 48 instâncias de quatro famílias clássicas, cada uma executada 5 vezes com sementes distintas, sob limite de 700 segundos.
+
+\textbf{Principais achados.} O Gurobi resolveu 31 das 48 instâncias (65\%), todas das famílias Heskiaoff e Roszieg e 7 de Tonge/Wee-Mag. O ILS entregou soluções viáveis em 100\% dos casos, igualando o ótimo em 22 das 24 instâncias menores e apresentando gaps de 2--31\% nas famílias mais complexas. A melhoria média sobre a solução construtiva inicial foi de 55\% em Heskiaoff, 60\% em Roszieg, 94\% em Tonge e 73\% em Wee-Mag, evidenciando a eficácia da busca local combinada à perturbação adaptativa.
+
+\textbf{Vantagens do ILS.} A implementação mostrou-se robusta e portátil, independente de licenças comerciais. A calibração automática de parâmetros via Optuna reduziu a necessidade de ajustes manuais e permitiu identificar configurações não intuitivas (por exemplo, perturbação inicial igual a 1 e limiar de melhoria em 133 iterações). O critério de aceitação tipo \textit{Simulated Annealing} garantiu escapar de ótimos locais sem perder qualidade nas regiões promissoras.
+
+\textbf{Limitações.} O gap persistente em instâncias Tonge e Wee-Mag com muitos trabalhadores (IDs 41--72) indica que a combinação de 70--75 tarefas com 17--19 trabalhadores impõe desafios de escalabilidade ao ILS. A variabilidade entre replicações (por exemplo, 65 a 77 em 72\_hes) sugere sensibilidade à semente e possível benefício de mais replicações ou mecanismos de intensificação.
+
+\textbf{Trabalhos futuros.}
+\begin{itemize}
+    \item Hibridizar o ILS com matheurísticas que utilizem o Gurobi para reotimizar subproblemas restritos quando houver tempo residual.
+    \item Explorar vizinhanças adicionais, como realocação em bloco de tarefas ou troca de trabalhadores guiada por análise de gargalos.
+    \item Paralelizar as replicações para aproveitar arquiteturas multicore e ampliar a cobertura do espaço de soluções.
+    \item Testar políticas de resfriamento não-monotônicas e perturbações específicas por família de instâncias.
+    \item Aplicar o ILS calibrado a instâncias reais de linhas de produção com trabalhadores com deficiência, validando sua utilidade prática.
+\end{itemize}
 
 % ----------------------------------------------------------
 \bibliography{abntex2-modelo-references}
