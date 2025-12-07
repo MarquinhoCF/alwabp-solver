@@ -678,7 +678,11 @@ Total & 48 & 31 & 17 \\
 
 \section{Resultados Detalhados por Instância}
 
-As Tabelas~\ref{tab:results_hes}--\ref{tab:results_wee} apresentam os resultados completos para cada instância. A coluna \emph{UB} indica o upper bound conhecido da literatura; \emph{Gurobi CT} e \emph{Gurobi (s)} mostram o tempo de ciclo e o tempo de execução do solver exato (``--'' indica timeout); \emph{ILS Melhor}, \emph{ILS Média} e \emph{ILS (s)} referem-se ao melhor ciclo entre as cinco replicações, à média dos ciclos finais e ao tempo médio de execução. A coluna \emph{Melhoria (\%)} indica a redução percentual média entre a solução inicial construtiva e a solução final refinada pelo ILS.
+As Tabelas~\ref{tab:results_hes}--\ref{tab:results_wee} apresentam os resultados completos para cada instância. A coluna \emph{UB} indica o upper bound conhecido da literatura; \emph{Gurobi CT} e \emph{Gurobi (s)} mostram o tempo de ciclo e o tempo de execução do solver exato (``--'' indica timeout); \emph{ILS Melhor}, \emph{ILS Média} e \emph{ILS (s)} referem-se ao melhor ciclo entre as cinco replicações, à média dos ciclos finais e ao tempo médio de execução. A coluna \emph{Melhoria (\%)} indica a redução percentual média entre a solução inicial construtiva ($C_{\text{inicial}}$) e a solução final refinada pelo ILS ($C_{\text{final}}$), calculada como:
+
+\[
+\text{Melhoria}(\%) = \frac{C_{\text{inicial}} - C_{\text{final}}}{C_{\text{inicial}}} \times 100
+\]
 
 \begin{table}[h]
 \centering
