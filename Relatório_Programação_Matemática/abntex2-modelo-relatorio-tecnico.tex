@@ -54,6 +54,9 @@
 \usepackage[brazilian,hyperpageref]{backref}	 % Paginas com as citações na bibl
 \usepackage[alf]{abntex2cite}	% Citações padrão ABNT
 
+\usepackage{algorithm, algorithmic}
+\usepackage{amsmath}
+
 % --- 
 % CONFIGURAÇÕES DE PACOTES
 % --- 
@@ -176,7 +179,9 @@
 % ---
 
 % resumo na língua vernácula (obrigatório)
+
 \setlength{\absparsep}{18pt} % ajusta o espaçamento dos parágrafos do resumo
+\newpage
 \begin{resumo}
  O Problema de Balanceamento de Linhas de Produção e Designação de Trabalhadores (ALWABP) consiste em atribuir tarefas a estações de trabalho e designar trabalhadores a essas estações, considerando relações de precedência entre tarefas, tempos de execução variáveis por trabalhador, e restrições de incapacidade específicas, com o objetivo de minimizar o tempo de ciclo da linha de produção, definido como o maior tempo de execução entre todas as estações. [Escrever sobre a heuristica]
 
@@ -194,27 +199,6 @@
 % inserir lista de tabelas
 % ---
 \pdfbookmark[0]{\listtablename}{lot}
-\listoftables*
-
-% ---
-% inserir lista de abreviaturas e siglas
-% ---
-\begin{siglas}
-  \item[ABNT] Associação Brasileira de Normas Técnicas
-  \item[abnTeX] ABsurdas Normas para TeX
-\end{siglas}
-% ---
-
-% ---
-% inserir lista de símbolos
-% ---
-\begin{simbolos}
-  \item[$ \Gamma $] Letra grega Gama
-  \item[$ \Lambda $] Lambda
-  \item[$ \zeta $] Letra grega minúscula zeta
-  \item[$ \in $] Pertence
-\end{simbolos}
-% ---
 
 % ---
 % inserir o sumario
@@ -233,6 +217,15 @@
 % ----------------------------------------------------------
 % Introdução (exemplo de capítulo sem numeração, mas presente no Sumário)
 % ----------------------------------------------------------
+\chapter{Introdução}
+A Pesquisa Operacional (PO) consolidou-se como uma área científica interdisciplinar dedicada ao apoio à tomada de decisões em sistemas complexos, empregando métodos matemáticos, estatísticos e computacionais para modelar, analisar e otimizar processos. Seu surgimento remonta à Segunda Guerra Mundial, quando estudos aplicados à logística, ao planejamento de recursos e ao uso estratégico de tecnologias militares impulsionaram o desenvolvimento de ferramentas analíticas avançadas, posteriormente estendidas a diversos setores civis \cite{arenales2007pesquisa}. Nesse contexto, os modelos de otimização desempenham papel central ao fornecer abstrações matemáticas capazes de representar, de forma estruturada, aspectos fundamentais de um sistema real, permitindo identificar soluções viáveis e eficientes para problemas de alocação, sequenciamento e dimensionamento \cite{goldbarg2005otimizacao}.
+
+Entre os problemas estudados no âmbito da otimização combinatória destaca-se o Assembly Line Worker Assignment and Balancing Problem (ALWABP), ou Problema de Alocação e Balanceamento de Trabalhadores em Linhas de Montagem. Essa variante avançada do balanceamento clássico de linhas incorpora, além da distribuição de tarefas, a alocação de trabalhadores com diferentes níveis de habilidade, tornando-se particularmente relevante em ambientes como centros de trabalho protegidos, que empregam pessoas com deficiência. Nesse tipo de cenário, as capacidades individuais influenciam significativamente os tempos de processamento, exigindo modelos capazes de integrar restrições de precedência, heterogeneidade humana e limites de tempo de ciclo. O ALWABP, portanto, além de seu valor operacional, representa um desafio associado à inclusão produtiva, ao reconhecer a diversidade de perfis e promover práticas de organização do trabalho socialmente responsáveis \cite{yilmaz2021modeling}.
+
+Dada a complexidade estrutural do ALWABP, métodos exatos podem tornar-se inviáveis para instâncias de tamanho real. Assim, o emprego de metaheurísticas torna-se uma alternativa promissora, uma vez que essas estratégias se baseiam em mecanismos estocásticos capazes de explorar o espaço de soluções de maneira eficiente, evitando a explosão combinatória típica de algoritmos exatos \cite{Luke2013Metaheuristics, glover2015metaheuristics}. Entre esses métodos, o sorteado foi Iterated Local Search (ILS), uma abordagem que combina simplicidade arquitetural e alta capacidade exploratória. No ILS, uma solução inicial é refinada por sucessivas buscas locais, intercaladas com perturbações controladas que promovem diversificação, enquanto um critério de aceitação orienta a evolução da trajetória de busca. Essa arquitetura, composta pelos módulos de geração inicial, busca local, perturbação e aceitação, permite construir uma sequência de soluções encadeadas que exploram o espaço de busca de maneira sistemática e eficiente \cite{lourenco2001gentle}.
+
+Diante desse contexto, este trabalho tem como objetivo resolver o Problema de Balanceamento de Linhas de Produção e Designação de Trabalhadores (ALWABP) por meio da implementação de uma metaheurística Iterated Local Search (ILS) e avaliando seu desempenho para a solução do problema. 
+
 \chapter{O problema}
 
 O \textbf{ALWABP} (Assembly Line Worker Assignment and Balancing Problem) é um problema de otimização que combina balanceamento de linha de produção com designação de trabalhadores. Suas características principais são:
@@ -364,6 +357,297 @@ v_{sw}, z_{siw} \in \{0,1\},
 C \ge 0
 \]
 
+\chapter{Iterated Local Search}
+\ref{cap_ils}
+
+O Iterated Local Search (ILS) é uma meta-heurística estocástica de otimização combinatorial pertencente à classe de algoritmos de busca baseada em trajetórias. O ILS tem como objetivo focar a busca em um subespaço reduzido, composto pelas soluções que são ótimos locais \(S^*\) para um determinado motor de otimização (normalmente uma busca local). A ideia central do ILS não é explorar o espaço de busca de forma completamente nova a cada iteração, mas sim realizar uma amostragem enviesada (ou dirigida) do conjunto de ótimos locais \cite{lourenco2001gentle}.
+
+
+\section{O Algoritmo Iterated Local Search}
+\label{sec:algoritmo-ils}
+
+O ILS implementa uma busca heurística em \(S^*\) através de um passeio estocástico. Dado um ótimo local corrente \(s^*\), o algoritmo aplica uma perturbação para gerar uma solução intermediária \(s' \in S\). Em seguida, aplica-se a Busca Local a \(s'\) para se obter um novo ótimo local \(s^{**}\). Um critério de aceitação decide se \(s^{**}\) substitui \(s^*\) como a solução corrente para a próxima iteração \cite{lourenco2001gentle}. A Figura~\ref{fig:perturbacao_ils} ilustra graficamente este processo. O algoritmo então, é executado sequencialmente de forma cíclica até que um critério de parada, como um número máximo de iterações ou um tempo de execução, seja satisfeito.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.65\linewidth]{imagens/Pertubation.png}
+    \caption{Representação do ILS.}
+    \label{fig:perturbacao_ils}
+    {\small Fonte: \cite{lourenco2001gentle}}
+\end{figure}
+
+A eficácia do ILS decorre do equilíbrio entre dois comportamentos complementares: a \textit{intensificação}, realizada pela busca local, que aprofunda a exploração em torno de uma solução; e a \textit{diversificação}, introduzida pela perturbação e pelo critério de aceitação, que permite ao algoritmo explorar novas regiões do espaço de busca. Este equilíbrio é crucial, pois perturbações muito pequenas podem causar um retorno frequente ao mesmo \(s^*\), enquanto perturbações muito grandes degradam a busca a uma reinicialização aleatória.
+
+A estrutura geral do ILS é sintetizada no pseudocódigo \ref{alg:ils}:
+
+\begin{algorithm}[h]
+\caption{Iterated Local Search (ILS)}
+\label{alg:ils}
+\begin{algorithmic}[1]
+\STATE \(s_0\) = \textsc{GeraçãoDaSoluçãoInicial}()
+\STATE \(s^*\) = \textsc{BuscaLocal}(\(s_0\))
+\WHILE{(Critério de parada não satisfeito)}
+    \STATE \(s'\) = \textsc{Perturbação}(\(s^*\))
+    \STATE \(s''\) = \textsc{BuscaLocal}(\(s'\))
+    \STATE \(s^*\) = \textsc{CritérioDeAceitação}(\(s^*, s''\))
+\ENDWHILE
+\RETURN \(s^*\)
+\end{algorithmic}
+\end{algorithm}
+
+\section{Implementação do ILS ao problema ALWABP}
+
+A implementação do ILS para o problema ALWABP segue a arquitetura geral apresentada na Seção \ref{sec:algoritmo-ils}, sendo adaptada para incorporar as especificidades do domínio. A escolha das quatro componentes principais foi orientada pelas características do problema, em particular pela presença de relações de precedência rígidas, pela heterogeneidade dos tempos de execução e pelas restrições de incapacidade dos trabalhadores.
+
+Cada uma dessas componentes e estratégias é detalhada nas subseções a seguir, com foco nas decisões de implementação tomadas para que o ILS atue de forma eficaz sobre a instância específica do ALWABP.
+
+\subsection{Geração de Solução Inicial}
+
+A qualidade da solução inicial pode influenciar a trajetória de busca do algoritmo ILS, embora seu efeito seja atenuado pelos mecanismos subsequentes de perturbação e aceitação. Para o ALWABP, adotou-se a heurística \textit{Ranked Positional Weight} (RPW), proposta inicialmente por \cite{helgeson1961assembly} para problemas de balanceamento de linha. Esta heurística foi adaptada para incorporar as características específicas do ALWABP, particularmente a heterogeneidade dos trabalhadores e as restrições de incapacidade. O procedimento consiste em duas fases sequenciais:
+
+\textbf{Fase 1 - Cálculo dos Pesos Posicionais:}
+Para cada tarefa $i$, determina-se um peso posicional ($RPW(i)$) que reflete sua carga de trabalho e a carga de todas as tarefas que dependem dela na cadeia de precedências. O cálculo é realizado de forma recursiva a partir das tarefas sem sucessores (folhas do grafo) em direção às raízes:
+
+\begin{equation}
+RPW(i) = \bar{t}_i + \sum_{j \in S(i)} RPW(j)
+\end{equation}
+
+onde $\bar{t}_i$ representa o tempo médio de execução da tarefa $i$ considerando todos os trabalhadores, e $S(i)$ denota o conjunto de todos os sucessores diretos e indiretos de $i$ no grafo de precedências. Esta métrica prioriza tarefas com maior duração própria e maior impacto subsequente no fluxo de produção.
+
+\textbf{Fase 2 - Atribuição Sequencial com Viabilidade: }
+As tarefas são ordenadas em lista decrescente de $RPW(i)$. Em seguida, percorre-se esta lista sequencialmente, tentando alocar cada tarefa à primeira estação de trabalho que satisfaça um conjunto de condições de viabilidade: Todos as tarefas predecessores da tarefa em questão já devem ter sido alocados a estações com índice igual ou anterior ao da estação candidata; O trabalhador designado para a estação candidata deve ser capaz de executar a tarefa ($i \notin I_w$).
+
+A designação inicial dos trabalhadores às estações é feita de forma aleatória, garantindo uma bijeção entre os conjuntos de trabalhadores e estações. Durante o processo de atribuição, caso uma tarefa não encontre uma estação viável com a configuração corrente de trabalhadores, o algoritmo inicia um subprocedimento de reatribuição de trabalhadores. Este subprocedimento permuta as alocações dos trabalhadores entre estações até que seja encontrada uma configuração que permita a alocação da tarefa bloqueada, mantendo a viabilidade das alocações já realizadas.
+
+O resultado deste processo na maioria das vezes é uma solução viável para o ALWABP, que serve como ponto de partida para a primeira aplicação da busca local dentro do ciclo do ILS.
+
+\subsection{Busca Local}
+
+A busca local tem como função aprimorar uma solução corrente através da exploração sistemática de seu espaço de vizinhança. Para o ALWABP, foi implementado o \textit{Variable Neighborhood Descent} (VND), um método que explora sequencialmente múltiplas estruturas de vizinhança predefinidas \cite{HANSEN2001449}.
+
+O VND aplica duas vizinhanças distintas, descritas a seguir, em uma ordem fixa. Sempre que uma melhoria é encontrada em uma vizinhança, o algoritmo retorna à primeira para reiniciar a busca. O procedimento termina quando nenhuma das vizinhanças consegue produzir uma melhoria na solução corrente, indicando que um ótimo local em relação ao conjunto de vizinhanças foi alcançado. Esta abordagem de busca sequencial em múltiplas vizinhanças tem sido aplicada com sucesso em problemas de balanceamento de linha com trabalhadores heterogêneos, como demonstrado por \cite{Polat01022016}.
+
+\textbf{Movimentação de Tarefas: }
+A primeira vizinhança é gerada por movimentos que realocam uma única tarefa entre estações diferentes. Formalmente, dado um par de estações distintas $(s_1, s_2)$ e uma tarefa $i$ atualmente alocada à estação $s_1$, um vizinho é criado movendo-se $i$ para $s_2$. Para que o movimento seja considerado viável, ele deve satisfazer três condições: A realocação não pode violar as relações de precedência do grafo, todos os predecessores de $i$ devem estar em estações com índice menor ou igual a $s_2$, e todos os seus sucessores devem estar em estações com índice maior ou igual a $s_2$;  O trabalhador $w_2$, alocado à estação destino $s_2$, deve ser capaz de executar a tarefa $i$ ($i \notin I_{w_2}$);  O movimento só é aceito se resultar em uma redução no tempo de ciclo global $C$.
+
+O cálculo do novo tempo de ciclo $C'$ após o movimento é eficiente, pois apenas as cargas das duas estações envolvidas são afetadas. Sejam $C_1$ e $C_2$ os tempos atuais das estações $s_1$ e $s_2$, respectivamente, e $t_{i,w}$ o tempo da tarefa $i$ quando executada pelo trabalhador $w$. O novo tempo de ciclo é dado por:
+
+\begin{equation}
+C' = \max\left\{ \, C_1 - t_{i,w_1}, \quad C_2 + t_{i,w_2}, \quad \max_{k \notin \{s_1, s_2\}} C_k \, \right\}
+\end{equation}
+
+onde $w_1$ e $w_2$ são os trabalhadores das estações origem e destino. A busca nesta vizinhança avalia exaustivamente todos os movimentos viáveis e aplica aquele que proporciona a maior redução em $C$.
+
+\textbf{Troca de Tarefas: }
+A segunda vizinhança é gerada pela operação de troca de tarefas entre duas estações diferentes. Dadas duas estações $s_1$ e $s_2$, com tarefas $i$ e $j$ alocadas a elas, respectivamente, um vizinho é criado trocando-se as posições de $i$ e $j$. A viabilidade da troca é verificada com base em critérios similares aos do movimento:  Ambos os trabalhadores, $w_1$ (de $s_1$) e $w_2$ (de $s_2$), devem ser capazes de executar a nova tarefa que lhes será atribuída;  As restrições de precedência devem ser preservadas para ambas as tarefas após a troca. Isso implica em verificar as relações de $i$ e de $j$ com suas novas posições nas estações $s_2$ e $s_1$, respectivamente; A troca deve resultar em um tempo de ciclo $C'$ estritamente menor que o atual.
+
+\subsection{Perturbação}
+
+A perturbação constitui o mecanismo central de diversificação no ILS, sendo responsável por conduzir a busca para regiões distintas do espaço de soluções quando a busca local atinge um ótimo local. A implementação proposta para o ALWABP emprega dois operadores estocásticos de perturbação: \textbf{Realocação Aleatória de Tarefas} e \textbf{Permutação Aleatória de Trabalhadores}. Para controlar a intensidade e a direção da diversificação, cada operador é acionado segundo uma probabilidade pré-definida: \textbf{70\%} e \textbf{30\%} respectivamente. A escolha destes operadores e suas probabilidades foi orientada pela estrutura específica do problema, que envolve dois conjuntos de decisões acopladas.
+
+O operador de \textbf{Realocação Aleatória de Tarefas} seleciona aleatoriamente uma tarefa $i$ e uma estação de destino $s_{\text{dest}}$ diferente de sua estação atual $s_{\text{orig}}$. O movimento é executado apenas se for considerado viável, isto é, se satisfizer todas as restrições do problema:  O trabalhador $w_{\text{dest}}$ alocado à estação $s_{\text{dest}}$ deve ser capaz de executar a tarefa $i$ (i.e., $i \notin I_{w_{\text{dest}}}$); Todos os predecessores de $i$ devem estar em estações com índice menor ou igual a $s_{\text{dest}}$, e todos os seus sucessores devem estar em estações com índice maior ou igual a $s_{\text{dest}}$.
+
+Já o operador de \textbf{Permutação Aleatória de Trabalhadores} seleciona aleatoriamente um par de estações distintas, $s_a$ e $s_b$, e troca os trabalhadores $w_a$ e $w_b$ alocados a elas. A troca é condicionada a uma verificação de viabilidade completa: ambos os trabalhadores devem ser capazes de executar \textit{todas} as tarefas atualmente alocadas à sua nova estação. Formalmente, para cada tarefa $i$ na estação $s_a$, deve valer $i \notin I_{w_b}$, e analogamente para as tarefas em $s_b$ em relação a $w_a$. Este operador altera o perfil de competências associado a cada estação, podendo viabilizar novos arranjos de tarefas que eram previamente inviáveis devido a restrições de incapacidade.
+
+A intensidade da perturbação é modulada pelo parâmetro $strength$, que determina o número total de operações de perturbação aplicadas consecutivamente para gerar $s'$ a partir de $s^*$. O número de movimentos é dado por $\text{movimentos} = strength \times 10$.
+
+\subsection{Critério de Aceitação}
+
+O critério de aceitação do algoritmo segue a estrutura clássica do \textit{Simulated Annealing} \cite{kirkpatrick1983}, permitindo tanto a aceitação de soluções melhores quanto a aceitação probabilística de soluções piores, com o objetivo de escapar de ótimos locais e explorar regiões mais amplas do espaço de busca.  
+
+Uma solução candidata \( s' \) é aceita em substituição à solução corrente \( s \) de acordo com a seguinte regra:  
+
+\[
+\text{aceitar}(s, s') = 
+\begin{cases}
+\text{verdadeiro}, & \text{se } f(s') < f(s) \\
+\text{verdadeiro}, & \text{se } \text{rand}() < \exp\left(-\dfrac{f(s') - f(s)}{T}\right) \\
+\text{falso}, & \text{caso contrário}
+\end{cases}
+\]
+
+em que:  
+
+- \( f(s) \) representa o tempo de ciclo da solução \( s \);  
+- \( T \) é a temperatura atual do sistema, que controla a probabilidade de aceitação de soluções piores;  
+- \( \text{rand}() \) retorna um número aleatório uniformemente distribuído no intervalo \([0,1]\).
+
+A temperatura inicial \( T_0 \) é definida como uma fração do custo inicial, conforme prática comum em algoritmos de \textit{Simulated Annealing} \cite{vanLaarhoven1987}:
+
+\[
+T_0 = 0.1 \times f(s_{\text{inicial}})
+\]
+
+Ao longo das iterações, a temperatura é progressivamente reduzida por meio de um fator de resfriamento \( \alpha = 0.95 \), seguindo a atualização:
+
+\[
+T_{k+1} = \alpha \times T_k
+\]
+
+Essa estratégia de resfriamento controlado permite um equilíbrio entre a fase exploratória inicial e a fase de exploração intensificada nas iterações finais.
+
+\subsection{Estratégias Adicionais}
+
+\subsubsection{Adaptação Dinâmica da Perturbação}
+
+Foi implementada uma estratégia de adaptação dinâmica da perturbação, na qual o parâmetro $strength$ que define a intensidade da perturbação, é ajustado dinamicamente durante a execução do algoritmo. Inicialmente, $strength$ é definido com o valor padrão (normalmente 2). Sempre que o algoritmo ultrapassa um limiar pré-definido de iterações consecutivas (padrão 50) sem melhorias na solução, o valor de $strength$ é incrementado em uma unidade, até atingir um limite máximo pré-definido (5 padrão). 
+
+\subsubsection{Reinicialização}
+
+Foi implementado uma estratégia de reinicialização para evitar cenários de exaustão da região de busca local. Dessa forma, quando o algoritmo executa um número pré-definido de iterações (1000 padrão) iterações consecutivas sem que o \textit{Simulated Anealing} aceite nenhuma nova solução o procedimento é acionado:
+
+\begin{enumerate}
+\item Gera uma nova solução inicial através da heurística RPW
+\item Aplica VND nesta nova solução
+\item Reinicia a temperatura para o valor inicial
+\item Define $strength = valor_inicial + 1$ (ligeiramente maior que o inicial)
+\item Mantém a melhor solução encontrada globalmente
+\end{enumerate}
+
+A reinicialização permite que o algoritmo explore regiões distantes do espaço de busca quando a região atual está esgotada.
+
+\subsubsection{Timeout Adaptativo}
+
+Foi implementada uma estratégia de timeout adaptativo para equilibrar o tempo de execução do algoritmo frente a diferentes níveis de complexidade das instâncias do ALWABP. Quando a opção \texttt{adaptive-timeout} está ativada, o limite máximo de execução é ajustado dinamicamente com base no progresso recente da busca. A cada 50 iterações (após as primeiras 100), o algoritmo computa uma taxa de melhorias das soluções:
+
+\begin{equation}
+\text{taxa} = \frac{\text{número de melhorias nas últimas 50 iterações}}{50}
+\end{equation}
+
+Se $\text{taxa} > 0.1$, o tempo máximo é estendido para $1.2 \times T_{\text{max}}$, onde $T_{\text{max}}$ é o tempo originalmente especificado. Este mecanismo concede tempo adicional quando o algoritmo está produzindo melhorias consistentes.
+
+\subsubsection{Critério de Parada}
+
+A implementação emprega um critério de parada multicondicional, garantindo que a execução seja interrompida assim que um dos limites for alcançado: (i) o número máximo de iterações pré-definido é atingido; (ii) o tempo máximo de execução é excedido; ou (iii) a solução encontrada apresenta uma qualidade considerada suficientemente próxima do ótimo, especificamente quando seu valor se situa dentro de uma tolerância de 0,01\% em relação ao valor ótimo conhecido (UB) quando está disponível.
+
+\chapter{Metodologia}
+
+Este capítulo descreve a metodologia empregada para a avaliação do Solver Gurobi e a implementação algoritmo ILS proposto para o ALWABP descrito no capítulo \ref{cap_ils}. São detalhados os procedimentos de otimização de parâmetros, a seleção das instâncias de teste, o protocolo experimental adotado e as métricas utilizadas para análise de desempenho.
+
+\section{Otimização de Parâmetros}
+
+A calibração dos parâmetros do algoritmo ILS foi realizada por meio de otimização automática utilizando o framework Optuna \cite{akiba2019optuna}, que implementa o algoritmo Tree-structured Parzen Estimator (TPE) para busca eficiente no espaço de hiperparâmetros.
+
+Os parâmetros selecionados para otimização e seus respectivos intervalos de busca são apresentados na Tabela~\ref{tab:param_ranges}. A definição dos intervalos dos parâmetros \textit{taxa de resfriamento} e \textit{fator de temperatura inicial} baseou-se em valores reportados na literatura para problemas similares \cite{kirkpatrick1983} e o restante foi definido com base em testes exploratórios preliminares. Durante a otimização, foi imposta a restrição lógica de que o parâmetro de perturbação máxima deve ser estritamente maior que o de perturbação inicial, garantindo a possibilidade de intensificação progressiva da diversificação.
+
+\begin{table}[h]
+\centering
+\caption{Espaço de busca dos hiperparâmetros}
+\label{tab:param_ranges}
+\begin{tabular}{lcc}
+\hline
+\textbf{Parâmetro} & \textbf{Intervalo} & \textbf{Tipo} \\
+\hline
+Taxa de resfriamento ($\alpha$) & [0.85, 0.99] & Contínuo \\
+Fator de temperatura inicial & [0.05, 0.30] & Contínuo \\
+Perturbação inicial & [1, 4] & Inteiro \\
+Perturbação máxima & [3, 8] & Inteiro \\
+Limiar de melhoria & [20, 200] & Inteiro \\
+Limiar de estagnação & [500, 2000] & Inteiro \\
+\hline
+\end{tabular}
+\end{table}
+
+Para cada configuração de parâmetros avaliada (\textit{trial}), o algoritmo ILS foi executado sobre uma instância de calibração com limite de tempo fixo. A função objetivo minimizada foi o tempo de ciclo da melhor solução encontrada. Formalmente:
+
+\[
+f(\theta) = C^*(\theta)
+\]
+
+onde $\theta$ representa um vetor de parâmetros e $C^*(\theta)$ denota o tempo de ciclo da solução retornada pelo ILS quando executado com a parametrização $\theta$.
+
+O processo de otimização seguiu o seguinte protocolo:
+
+\begin{enumerate}
+\item Seleção da \textit{72 Tonge} como instância representativa do conjunto de teste para calibração
+\item Execução de 20 trials do algoritmo TPE
+\item Limite de tempo de 300 segundos por trial
+\item Registro do tempo de ciclo final e do gap em relação ao valor ótimo conhecido
+\item Armazenamento da melhor configuração encontrada em arquivo YAML para uso nos experimentos posteriores
+\end{enumerate}
+
+Ao término do processo de otimização, a melhor configuração de parâmetros identificada pelo algoritmo TPE é apresentada na Tabela~\ref{tab:best_params}.
+
+\textbf{PRECISA ATUALIZAR OS VALORES DESSA TABELA}
+
+\begin{table}[h]
+\centering
+\caption{Parâmetros otimizados do algoritmo ILS}
+\label{tab:best_params}
+\begin{tabular}{lcc}
+\hline
+\textbf{Parâmetro} & \textbf{Valor} & \textbf{Descrição} \\
+\hline
+Iterações máximas & 10000 & Limite de iterações \\
+Tempo máximo & 700s & Limite de tempo \\
+Temperatura inicial & $0.1 \times C_0$ & Fator da temperatura \\
+Taxa de resfriamento & 0.95 & Redução da temperatura \\
+Perturbação inicial & 2 & Intensidade inicial \\
+Perturbação máxima & 5 & Intensidade máxima \\
+Limiar de melhoria & 50 & Iterações para adaptar perturbação \\
+Limiar de estagnação & 1000 & Iterações para reinicialização \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Instâncias de Teste}
+
+\subsection{Conjunto de Dados}
+
+Os experimentos foram conduzidos sobre instâncias do benchmark ALWABP disponibilizadas pelo professor no campus virtual da disciplina, que representam diferentes configurações de linhas de produção originadas de quatro problemas base da literatura: Heskiaoff, Roszieg, Tonge e Wee-Mag. O conjunto final consistiu em 48 instâncias distribuídas entre os quatro problemas base, com 12 instâncias de cada família. A relação completa das instâncias avaliadas é apresentada na Tabela~\ref{tab:instances}.
+
+\begin{table}[h]
+\centering
+\caption{Instâncias do benchmark ALWABP utilizadas nos experimentos}
+\label{tab:instances}
+\begin{tabular}{cc|cc|cc|cc}
+\hline
+\multicolumn{2}{c|}{\textbf{Heskiaoff}} & \multicolumn{2}{c|}{\textbf{Roszieg}} & \multicolumn{2}{c|}{\textbf{Tonge}} & \multicolumn{2}{c}{\textbf{Wee-Mag}} \\
+\textbf{Nome} & \textbf{ID} & \textbf{Nome} & \textbf{ID} & \textbf{Nome} & \textbf{ID} & \textbf{Nome} & \textbf{ID} \\
+\hline
+heskia & 1  & roszieg & 1  & tonge & 1  & wee-mag & 1  \\
+heskia & 2  & roszieg & 2  & tonge & 2  & wee-mag & 2  \\
+heskia & 11 & roszieg & 11 & tonge & 11 & wee-mag & 11 \\
+heskia & 12 & roszieg & 12 & tonge & 12 & wee-mag & 12 \\
+heskia & 41 & roszieg & 41 & tonge & 41 & wee-mag & 41 \\
+heskia & 42 & roszieg & 42 & tonge & 42 & wee-mag & 42 \\
+heskia & 51 & roszieg & 51 & tonge & 51 & wee-mag & 51 \\
+heskia & 52 & roszieg & 52 & tonge & 52 & wee-mag & 52 \\
+heskia & 61 & roszieg & 61 & tonge & 61 & wee-mag & 61 \\
+heskia & 62 & roszieg & 62 & tonge & 62 & wee-mag & 62 \\
+heskia & 71 & roszieg & 71 & tonge & 71 & wee-mag & 71 \\
+heskia & 72 & roszieg & 72 & tonge & 72 & wee-mag & 72 \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Protocolo Experimental}
+
+\subsection{Implementação}
+
+Ambos os algoritmos, ILS e modelo exato via Gurobi, foram implementados em Python 3.8. O modelo de programação linear inteira foi resolvido utilizando o solver Gurobi 9.5, enquanto o ILS foi implementado utilizando estruturas de dados nativas do Python para maximizar a portabilidade.
+
+\subsection{Execução dos Experimentos}
+
+Para cada instância do conjunto de teste, foram realizadas as seguintes etapas:
+
+\textbf{Resolução via Gurobi:}
+\begin{itemize}
+\item Limite de tempo de 700 segundos
+\item Registro do tempo de ciclo da melhor solução encontrada
+\item Armazenamento da solução em arquivo texto
+\end{itemize}
+
+\textbf{Resolução via ILS:}
+\begin{itemize}
+\item Cinco replicações independentes com sementes distintas (10, 11, 12, 13, 14)
+\item Limite de tempo base de 700 segundos, ajustável dinamicamente quando a opção de timeout adaptativo está ativada
+\item Critério de parada antecipada quando a solução atinge tolerância de 0,01\% em relação ao valor ótimo conhecido
+\item Utilização do valor obtido pelo Gurobi como referência para parada antecipada quando disponível
+\item Armazenamento individual de cada solução
+\end{itemize}
+
+A execução de múltiplas replicações do ILS visa capturar a variabilidade inerente ao comportamento estocástico da metaheurística, permitindo análise estatística dos resultados.
 
 % ----------------------------------------------------------
 \bibliography{abntex2-modelo-references}
